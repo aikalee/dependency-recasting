@@ -1,0 +1,73 @@
+from itertools import product
+from conllu import parse_incr
+from tqdm import tqdm
+
+from pathgen import get_deprojz_file_path, get_conllu_file_path, get_matched_file_path
+from src.steps.conllu_io import rewrite_conllu
+from src.postprocessing.mrg_to_conllu import mrg_to_conllu
+
+def remove_mismatched_sentences(read_system_path, read_gold_path, write_system_path, write_gold_path):
+
+    mismatched_count = 0
+
+    with open(write_system_path, "w", encoding="utf-8") as sysout, \
+         open(write_gold_path, "w", encoding="utf-8") as goldout:
+        pass
+    with open(read_system_path, "r", encoding="utf-8") as sysin, \
+         open(read_gold_path, "r", encoding="utf-8") as goldin: 
+        for tokenlist1, tokenlist2 in tqdm(zip(parse_incr(sysin), parse_incr(goldin)), desc="Removing mismatched sentences:"):
+            sys_text = tokenlist1.metadata["text"]
+            gold_text = tokenlist2.metadata["text"]
+            if sys_text != gold_text:
+                mismatched_count += 1
+            else:
+                with open(write_system_path, "a", encoding="utf-8") as sysout,  \
+                     open(write_gold_path, "a", encoding="utf-8") as goldout:
+                    sysout.write(tokenlist1.serialize())
+                    goldout.write(tokenlist2.serialize())
+    return mismatched_count       
+
+def postprocessing_pipeline(lang_name,pseudo_flags, pos, epoch):
+
+    def ensure_list(arg):
+        return arg if isinstance(arg, list) else [arg]
+
+    # lang_name = ["Ancient_Greek", "Danish", "English", "Latin", "Old_East_Slavic", "Urdu"] 
+    lang_name, pseudo_flags, pos, epoch = map(
+        ensure_list,
+        (lang_name, pseudo_flags, pos, epoch)
+    )
+            
+    # lang_name = ["English"]
+    # projz_flags = [False]
+    # pseudo_flags = [False]
+    # pos = ["UPOS"]
+    # epoch = ["20", "100"]
+
+    # === Tree conversion ===
+    paras = list(product(lang_name, epoch, pos, pseudo_flags))
+    
+    for para in paras:
+        read_path, write_path = get_conllu_file_path(*para)
+        mrg_to_conllu(read_path, write_path)
+
+    # === Deprojectivization ===
+    paras = list(product(lang_name, epoch, pseudo_flags))
+    
+    for para in paras:
+        read_path, write_path = get_deprojz_file_path(*para)
+        rewrite_conllu(read_path, write_path, False)
+
+    # === Remove mismatched sentences ===
+    paras = list(product(lang_name, epoch))
+    for para in paras:
+        read_system_path, read_gold_path, write_system_path, write_gold_path = get_matched_file_path(*para)
+        mismatched_count = remove_mismatched_sentences(read_system_path, read_gold_path, write_system_path, write_gold_path)
+        print(f"Number of mismatched sentences: {mismatched_count}")
+
+
+def main():
+    postprocessing_pipeline()
+
+if __name__ == "__main__":
+    main()

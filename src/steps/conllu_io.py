@@ -1,5 +1,3 @@
-import os
-import sys
 from tqdm import tqdm
 
 from collections import defaultdict, deque
@@ -9,8 +7,8 @@ from dataclasses import dataclass
 from itertools import product
 from typing import Optional
 
-from projectivize import is_non_proj, get_non_proj_arcs, projectivize, relabel
-from deprojectivize import deprojectivize_by_head, deprojectivize_by_path, is_projz
+from src.steps.projectivize import is_non_proj, get_non_proj_arcs, projectivize, relabel
+from src.steps.deprojectivize import deprojectivize_by_head, deprojectivize_by_path, is_projz
 
 
 @dataclass
@@ -27,7 +25,7 @@ class SentenceData:
     stack: Optional[deque] = None
     parent_stack: Optional[deque] = None
 
-def initialize(deprels, projz_mode=True, head=False, path=True):
+def init_sentencedata(deprels):
 
     arcs = list(deprels.keys())
     num_tokens = len(arcs)
@@ -48,14 +46,10 @@ def initialize(deprels, projz_mode=True, head=False, path=True):
                 arcs.remove(k)
             else:
                 dlookup[h] += [d] 
-                # if head:
                 head_candidate_lookup[(h, v)] += [d]
-                if path:
-                    if "↓" in v:
-                        # print(k, v)
-                        # print(path_candidate_lookup)
-                        path_candidate_lookup[h] += [d]
-                        parent_stack += [d]
+                if "↓" in v:
+                    path_candidate_lookup[h] += [d]
+                    parent_stack += [d]
   
                 
     return SentenceData(
@@ -86,7 +80,7 @@ def read_conllu(file_path):
                     tokens.append(token)
 
             no_mwt_tokenlist = TokenList(tokens, metadata=tokenlist.metadata)
-            sentencedata = initialize(deprels)
+            sentencedata = init_sentencedata(deprels)
             
                 
             yield no_mwt_tokenlist, sentencedata
@@ -101,7 +95,7 @@ def read_conllu_sentence(sent):
         if isinstance(token["id"], int):
             deprels[(token["id"], token["head"])] = token["deprel"]
 
-    sentencedata = initialize(deprels)
+    sentencedata = init_sentencedata(deprels)
     
     return tokenlist[0], sentencedata
 
@@ -158,99 +152,6 @@ def rewrite_conllu(read_path, write_path, projz_mode=True, pseudo_filter=False) 
                 # print("Write sucessful:", tokenlist.metadata["sent_id"])
         except Exception as e:
             print("‼️ Write failed:", e)
-
-def construct_projz_file_path(lang, epoch, projz_mode=False, pseudo_filter=False, split=""):
-
-    # file name: lang_(method)_split_(pseudo)_(deprojz)
-
-    if projz_mode and split not in ["train", "test", "dev"]:
-        raise ValueError("The variable split must match one of the followings: train, test, dev")
-    
-    # projz_mode = False if split == "output" else projz_mode
-
-    ud_abbr_lookup = {
-        "Ancient_Greek": "grc",
-        "Chinese": "zh",
-        "Danish": "da",
-        "English": "en",
-        "Korean": "ko",
-        "Latin": "la",
-        "Old_East_Slavic": "orv",
-        "Urdu": "ur"
-    }
-
-    # language code reference: https://github.com/stanfordnlp/stanza/blob/dev/stanza/models/common/constant.py
-    ptb_abbr_lookup = {
-        "Ancient_Greek": "grc",
-        "Chinese": "zh-hant",
-        "Danish": "da",
-        "English": "en",
-        "Korean": "ko",
-        "Latin": "la",
-        "Old_East_Slavic": "orv",
-        "Urdu": "ur"
-    }
-
-    treebank_lookup = {
-        "Ancient_Greek": "Perseus",
-        "Chinese": "GSD",
-        "Danish": "DDT",
-        "English": "Penn",
-        "Korean": "GSD",
-        "Latin": "UDante",
-        "Old_East_Slavic": "RNC",
-        "Urdu": "UDTB"
-    }
-
-    ud_abbr = ud_abbr_lookup[lang]
-    ptb_abbr = ptb_abbr_lookup[lang]
-    treebank = treebank_lookup[lang]
-
-    if projz_mode:
-        input_file = "raw"
-        output_file = "processed"
-        projz = f"{treebank.lower()}-ud-"
-
-        if pseudo_filter:
-            pseudo_out = "_pseudo"
-
-        else:
-            pseudo_out = ""
-
-        
-    else:
-        projz = "most-crossed"
-
-        input_file = "baseline_outputs" if split == "output" else "processed"
-        output_file = input_file
-
-        pseudo = "pseudo" if pseudo_filter else "none"
-        pos = "upos"
-    
-    output_dir = f"data/{output_file}/ud/UD_{lang}-{treebank}"
-   
-    # read_dir = f"../data/{input_dir}/UD_{lang}-{treebank}"
-    if projz_mode:
-        read_path = fr"data/{input_file}/UD_{lang}-{treebank}/{ud_abbr}_{projz}{split}.conllu"
-        write_path = f"{output_dir}/{ud_abbr}_most-crossed_{split}{pseudo_out}.conllu"
-       
-    else:   
-        read_path = fr"predictions/{ptb_abbr}-{treebank.lower()}-ud,filter={pseudo},method=most-crossed,pos={pos},epoch={epoch}.conllu"
-        write_path = f"predictions/{ptb_abbr}-{treebank.lower()}-ud,filter={pseudo},method=most-crossed-deprojz,pos={pos},epoch={epoch}.conllu"
-    
-    
-    if not os.path.exists(read_path):
-            raise FileNotFoundError(f"The file '{read_path}' does not exist.")
-    
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir, exist_ok=True)
-        print(f"Created: {output_dir}")
-  
-    print(f"Loading from {read_path}...")
-    print(f"Writing into {write_path}...")
-    
-    return read_path, write_path
-    
     
 def main():
     # ======================== Sample usage ====================================
