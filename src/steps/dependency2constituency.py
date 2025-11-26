@@ -2,8 +2,8 @@ import sys
 from collections import defaultdict, deque
 from functools import reduce
 from operator import getitem
-from data_loader import read_conllu_file
-from check_projectivity import is_non_projective_sentence
+from src.steps.data_loader import read_conllu_file
+from src.steps.check_projectivity import is_non_projective_sentence
 
 import logging
 logger = logging.getLogger(__name__)

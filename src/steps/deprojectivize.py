@@ -3,7 +3,7 @@ from functools import reduce
 from itertools import product
 from operator import mul
 
-from projectivize import get_non_proj_arcs
+from src.steps.projectivize import get_non_proj_arcs
 
 def is_projz(deprels):
 

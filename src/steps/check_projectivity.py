@@ -1,4 +1,4 @@
-from data_loader import read_conllu_file_from_tgz, read_conllu_file
+from src.steps.data_loader import read_conllu_file_from_tgz, read_conllu_file
 from copy import deepcopy
 from collections import defaultdict
 
