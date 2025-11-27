@@ -1,21 +1,14 @@
 import sys
+from conllu import TokenList
 from collections import defaultdict, deque
 from functools import reduce
 from operator import getitem
-from src.steps.data_loader import read_conllu_file
-from src.steps.check_projectivity import is_non_projective_sentence
 
 import logging
 logger = logging.getLogger(__name__)
 from nltk.tree import Tree
 
-def head2dep(sentence):
-    head2dep_dict = defaultdict(list)
-    for id, token in sentence.items():
-        head2dep_dict[token['head']].append(id)
-    return head2dep_dict
-
-def sentence2tree(sentence, pos_type="UPOS", add_starting_node=True, replace_colon=True, replace_bracket=True):
+def sentence2tree(sentencedata, tokenlist, pos_type="UPOS", add_starting_node=True, replace_colon=True, replace_bracket=True):
     """
     Converts a sentence represented as a dictionary into a Tree object.
     Args:
@@ -24,7 +17,7 @@ def sentence2tree(sentence, pos_type="UPOS", add_starting_node=True, replace_col
 
     """
     sent_id = 0
-    def get_subtree(id, sentence, head2dep_dict):
+    def get_subtree(head_id, tokenlist, dlookup):
         """
         Recursively constructs a Tree object from the sentence data.
         Args:
@@ -35,30 +28,31 @@ def sentence2tree(sentence, pos_type="UPOS", add_starting_node=True, replace_col
             Tree: A Tree object representing the syntactic structure of the subtree below the head id.
         """
         
-        children = head2dep_dict.get(id, [])
-        logger.debug(f"ID: {id}, Children: {children}")
+        children = dlookup.get(head_id, [])
+        logger.debug(f"ID: {head_id}, Children: {children}")
 
-        all_id = [id] + children
+        all_id = [head_id] + children
         all_id.sort()
 
         branches = []
         for current_id in all_id:
+    
             logger.debug(f"Processing ID: {current_id}")
-            if current_id == id:
+            if current_id == head_id:
                 if pos_type == "UPOS":
-                    pos = sentence[current_id]['UPOS']
+                    pos = tokenlist[current_id-1]['upos']
                 else:
-                    pos = sentence[current_id]['XPOS']
+                    pos = tokenlist[current_id-1]['xpos']
                 if replace_colon:
                     pos = pos.replace(":", "_")
-                form = sentence[current_id]['form']
+                form = tokenlist[current_id-1]['form']
                 if replace_bracket:
                     form = form.replace("（", "-LRBC-").replace("）", "-RRBC-").replace("(", "-LRBE-").replace(")", "-RRBE-")
                 branches.append(Tree(pos, [form]))
                     
             else:
-                branches.append(get_subtree(current_id, sentence, head2dep_dict))
-        deprel = sentence[id]['deprel']
+                branches.append(get_subtree(current_id, tokenlist, dlookup))
+        deprel = tokenlist[head_id-1]['deprel']
         if replace_colon:
             deprel = deprel.replace(":", "_")
         return Tree(deprel, branches)
@@ -67,10 +61,12 @@ def sentence2tree(sentence, pos_type="UPOS", add_starting_node=True, replace_col
         print(f"Warning: Invalid POS tag '{pos_type}'. Using 'UPOS' by default.")
         pos_type = "UPOS"  # default to UPOS if not specified correctly
 
-    head2dep_dict = head2dep(sentence)
-    logger.debug(f"Head to Dependent Dictionary: {head2dep_dict}")
+    dlookup = sentencedata.dlookup
+    logger.debug(f"Head to Dependent Dictionary: {dlookup}")
+
+   
     
-    tree = get_subtree(head2dep_dict[0][0], sentence, head2dep_dict)
+    tree = get_subtree(dlookup[0][0], tokenlist, dlookup)
     
     if add_starting_node:
         return Tree("TOP", [tree])
@@ -201,8 +197,6 @@ def fix_illformed(tree):
             updated_subtree.insert(head_chosen_index+offset, child)
         return updated_subtree
         
-
-
     _assign_parents(tree)
     queue = deque([tree]) # `tree` only refer to the entire tree here
       
@@ -219,7 +213,6 @@ def fix_illformed(tree):
         # step 3: attach the branches back
         # step 4: reset 
         if head_chosen:
-           
             if wrong_heads_2b_lowered:
                 for wrong_head in wrong_heads_2b_lowered:
                     tree = _build_tree(wrong_head, Tree("dummy", [wrong_head]))
@@ -242,7 +235,6 @@ def fix_illformed(tree):
         for child in list(subtree_for_queuing):
             if not isinstance(child[0], str):
                 queue.append(child)
-    # print(f"Fixed tree:\n {tree}")
     return tree
 
 def tree2sentence(tree, pos_type="UPOS"):
@@ -261,29 +253,37 @@ def tree2sentence(tree, pos_type="UPOS"):
             if len(child) == 1 and isinstance(child[0], tuple):
                 return child[0][0]
             
-    def add_head_to_sentence(subtree, sentence, head_id=0, deprel="ROOT"):
+    def add_head_to_sentence(subtree, tokens, head_id=0, deprel="ROOT"):
         """
         Add the head ID and dependency relation to the sentence dictionary.
         """
         logger.debug(f"Processing subtree: {subtree}, head_id: {head_id}")
-        
+        upos = subtree.label() if pos_type == "UPOS" else None
+        xpos = subtree.label() if pos_type == "XPOS" else None
+
         for child in subtree: 
             logger.debug(f"Processing child: {child}")
             if isinstance(child, tuple):
                 logger.debug(f"Adding token: {child}, head: {head_id}, {pos_type}: {subtree.label()}, deprel: {deprel}")
-                sentence[int(child[0])] = {
+                token = {
                     "id": int(child[0]),
                     "form": child[1],
-                    pos_type: subtree.label(),
+                    "lemma": None,
+                    "upos": upos,
+                    "xpos": xpos,
+                    "feats": None,
                     "head": int(head_id),
-                    "deprel": deprel
+                    "deprel": deprel,
+                    "deps": None,
+                    "misc": None
                 }
-                logger.debug(f"Current sentence state: {sentence}")    
+                tokens.insert(int(child[0]), token)
+                logger.debug(f"Current sentence state: {tokens}")    
             elif len(child) == 1 and isinstance(child[0], tuple): 
-                add_head_to_sentence(child, sentence, head_id, subtree.label())
+                add_head_to_sentence(child, tokens, head_id, subtree.label())
             else:
                 subtree_head_id = find_head_id(subtree) # not all subtrees have children
-                add_head_to_sentence(child, sentence, subtree_head_id, subtree.label())
+                add_head_to_sentence(child, tokens, subtree_head_id, subtree.label())
 
     if pos_type not in ["UPOS", "XPOS"]:
         print(f"Warning: Invalid POS tag '{pos_type}'. Using 'UPOS' by default.")
@@ -299,10 +299,9 @@ def tree2sentence(tree, pos_type="UPOS"):
         
     tree_with_ids = add_ids_to_tree(tree)
     logger.info(f"Tree with IDs: {tree_with_ids}")
-    sentence = defaultdict(dict)
-    add_head_to_sentence(tree_with_ids, sentence, 0)
-    
-    return sentence, is_illformed
+    tokens = []
+    add_head_to_sentence(tree_with_ids, tokens, 0)
+    return tokens, is_illformed
 
 def main():
     logging.basicConfig(level=logging.INFO)
