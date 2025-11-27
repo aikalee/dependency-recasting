@@ -1,16 +1,15 @@
-from src.steps.data_loader import read_conllu_file
-from src.steps.dependency2constituency import sentence2tree
+from src.steps.conllu_io import read_conllu
+from src.steps.dep2const import sentence2tree
 from itertools import product
+from tqdm import tqdm
 
 def conllu_to_mrg(read_path, write_path):
 
     with open(write_path, "w", encoding="utf-8") as f:
         pass
 
-    for sentence in read_conllu_file(read_path):
-
-        ptb = sentence2tree(sentence)
-
+    for tokenlist, sentencedata in tqdm(read_conllu(read_path), desc="Converting sentences to trees"):
+        ptb = sentence2tree(sentencedata, tokenlist)
         with open(write_path, "a", encoding="utf-8") as f:
             f.write(ptb.pformat(margin=float('inf')) + "\n")
 
