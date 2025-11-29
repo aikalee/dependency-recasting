@@ -1,0 +1,256 @@
+# sent_id = english-penn-test-923
+# text = Hardest hit are what he calls `` secondary '' sites that primarily serve neighborhood residents .
+1	Hardest	_	ADJ	JJS	_	2	advmod	_	_
+2	hit	_	NOUN	NN	_	0	root	_	_
+3	are	_	VERB	VBP	_	2	dep	_	_
+4	what	_	PRON	WP	_	2	dobj	_	_
+5	he	_	PRON	PRP	_	6	nsubj	_	_
+6	calls	_	VERB	VBZ	_	2	dep	_	_
+7	``	_	PUNCT	``	_	10	punct	_	_
+8	secondary	_	ADJ	JJ	_	10	amod	_	_
+9	''	_	PUNCT	''	_	10	punct	_	_
+10	sites	_	NOUN	NNS	_	6	xcomp↓	_	_
+11	that	_	PRON	WDT	_	13	nsubj	_	_
+12	primarily	_	ADV	RB	_	13	advmod	_	_
+13	serve	_	VERB	VBP	_	10	acl:relcl	_	_
+14	neighborhood	_	NOUN	NN	_	15	compound	_	_
+15	residents	_	NOUN	NNS	_	13	dobj	_	_
+16	.	_	PUNCT	.	_	2	punct	_	_
+
+# sent_id = english-penn-test-1048
+# text = So CNN , a unit of Atlanta-based Turner Broadcasting System Inc. , is trying to reposition itself as a primary channel , or what people in the television industry call a `` top of mind '' network .
+1	So	_	ADV	RB	_	14	advmod	_	_
+2	CNN	_	PROPN	NNP	_	14	nsubj	_	_
+3	,	_	PUNCT	,	_	2	punct	_	_
+4	a	_	DET	DT	_	5	det	_	_
+5	unit	_	NOUN	NN	_	2	appos	_	_
+6	of	_	ADP	IN	_	11	case	_	_
+7	Atlanta-based	_	ADJ	JJ	_	11	amod	_	_
+8	Turner	_	PROPN	NNP	_	11	compound	_	_
+9	Broadcasting	_	PROPN	NNP	_	11	compound	_	_
+10	System	_	PROPN	NNP	_	11	compound	_	_
+11	Inc.	_	PROPN	NNP	_	5	nmod	_	_
+12	,	_	PUNCT	,	_	2	punct	_	_
+13	is	_	AUX	VBZ	_	14	aux	_	_
+14	trying	_	VERB	VBG	_	0	root	_	_
+15	to	_	PART	TO	_	16	mark	_	_
+16	reposition	_	VERB	VB	_	14	xcomp	_	_
+17	itself	_	PRON	PRP	_	16	dobj	_	_
+18	as	_	ADP	IN	_	21	case	_	_
+19	a	_	DET	DT	_	21	det	_	_
+20	primary	_	ADJ	JJ	_	21	amod	_	_
+21	channel	_	NOUN	NN	_	16	nmod↓	_	_
+22	,	_	PUNCT	,	_	21	punct	_	_
+23	or	_	CONJ	CC	_	21	cc	_	_
+24	what	_	PRON	WP	_	14	dobj	_	_
+25	people	_	NOUN	NNS	_	30	nsubj	_	_
+26	in	_	ADP	IN	_	29	case	_	_
+27	the	_	DET	DT	_	29	det	_	_
+28	television	_	NOUN	NN	_	29	compound	_	_
+29	industry	_	NOUN	NN	_	25	nmod	_	_
+30	call	_	VERB	VBP	_	14	conj	_	_
+31	a	_	DET	DT	_	37	det	_	_
+32	``	_	PUNCT	``	_	37	punct	_	_
+33	top	_	NOUN	NN	_	37	dep	_	_
+34	of	_	ADP	IN	_	35	case	_	_
+35	mind	_	NOUN	NN	_	33	nmod	_	_
+36	''	_	PUNCT	''	_	37	punct	_	_
+37	network	_	NOUN	NN	_	30	xcomp↓	_	_
+38	.	_	PUNCT	.	_	14	punct	_	_
+
+# sent_id = english-penn-test-1153
+# text = China 's Communist leadership voted to purge the party of `` hostile and anti-party elements '' and wealthy private businessmen , whom they called exploiters .
+1	China	_	PROPN	NNP	_	4	nmod:poss	_	_
+2	's	_	PART	POS	_	1	case	_	_
+3	Communist	_	ADJ	JJ	_	4	amod	_	_
+4	leadership	_	NOUN	NN	_	5	nsubj	_	_
+5	voted	_	VERB	VBD	_	0	root	_	_
+6	to	_	PART	TO	_	7	mark	_	_
+7	purge	_	VERB	VB	_	5	xcomp	_	_
+8	the	_	DET	DT	_	9	det	_	_
+9	party	_	NOUN	NN	_	7	dobj	_	_
+10	of	_	ADP	IN	_	15	case	_	_
+11	``	_	PUNCT	``	_	15	punct	_	_
+12	hostile	_	ADJ	JJ	_	15	amod	_	_
+13	and	_	CONJ	CC	_	12	cc	_	_
+14	anti-party	_	ADJ	JJ	_	12	conj	_	_
+15	elements	_	NOUN	NNS	_	7	nmod	_	_
+16	''	_	PUNCT	''	_	15	punct	_	_
+17	and	_	CONJ	CC	_	15	cc	_	_
+18	wealthy	_	ADJ	JJ	_	20	amod	_	_
+19	private	_	ADJ	JJ	_	20	amod	_	_
+20	businessmen	_	NOUN	NNS	_	15	conj↓	_	_
+21	,	_	PUNCT	,	_	20	punct	_	_
+22	whom	_	PRON	WP	_	5	dobj	_	_
+23	they	_	PRON	PRP	_	24	nsubj	_	_
+24	called	_	VERB	VBD	_	5	acl:relcl	_	_
+25	exploiters	_	NOUN	NNS	_	24	xcomp↓	_	_
+26	.	_	PUNCT	.	_	5	punct	_	_
+
+# sent_id = english-penn-test-1261
+# text = But much of what the Europeans want to protect seems every bit as cheesy as what they are trying to keep out .
+1	But	_	CONJ	CC	_	10	cc	_	_
+2	much	_	ADJ	JJ	_	10	nsubj	_	_
+3	of	_	SCONJ	IN	_	7	mark	_	_
+4	what	_	PRON	WP	_	7	dobj	_	_
+5	the	_	DET	DT	_	6	det	_	_
+6	Europeans	_	PROPN	NNPS	_	7	nsubj	_	_
+7	want	_	VERB	VBP	_	2	acl	_	_
+8	to	_	PART	TO	_	9	mark	_	_
+9	protect	_	VERB	VB	_	7	xcomp	_	_
+10	seems	_	VERB	VBZ	_	0	root	_	_
+11	every	_	DET	DT	_	12	det	_	_
+12	bit	_	NOUN	NN	_	14	dep	_	_
+13	as	_	ADV	RB	_	14	advmod	_	_
+14	cheesy	_	ADJ	JJ	_	10	xcomp	_	_
+15	as	_	SCONJ	IN	_	19	mark	_	_
+16	what	_	PRON	WP	_	10	dobj	_	_
+17	they	_	PRON	PRP	_	19	nsubj	_	_
+18	are	_	AUX	VBP	_	19	aux	_	_
+19	trying	_	VERB	VBG	_	14	advcl	_	_
+20	to	_	PART	TO	_	21	mark	_	_
+21	keep	_	VERB	VB	_	19	xcomp↓	_	_
+22	out	_	ADP	RP	_	21	compound:prt	_	_
+23	.	_	PUNCT	.	_	10	punct	_	_
+
+# sent_id = english-penn-test-1666
+# text = `` Most people , '' he says , `` have no idea what a massacre pattern looks like . ''
+1	``	_	PUNCT	``	_	10	punct	_	_
+2	Most	_	ADJ	JJS	_	3	amod	_	_
+3	people	_	NOUN	NNS	_	10	nsubj	_	_
+4	,	_	PUNCT	,	_	7	punct	_	_
+5	''	_	PUNCT	''	_	7	punct	_	_
+6	he	_	PRON	PRP	_	7	nsubj	_	_
+7	says	_	VERB	VBZ	_	10	parataxis	_	_
+8	,	_	PUNCT	,	_	7	punct	_	_
+9	``	_	PUNCT	``	_	10	punct	_	_
+10	have	_	VERB	VBP	_	0	root	_	_
+11	no	_	DET	DT	_	12	neg	_	_
+12	idea	_	NOUN	NN	_	10	dobj↓	_	_
+13	what	_	PRON	WP	_	17	nmod↓	_	_
+14	a	_	DET	DT	_	16	det	_	_
+15	massacre	_	NOUN	NN	_	16	compound	_	_
+16	pattern	_	NOUN	NN	_	17	nsubj	_	_
+17	looks	_	VERB	VBZ	_	10	ccomp	_	_
+18	like	_	ADP	IN	_	10	case	_	_
+19	.	_	PUNCT	.	_	10	punct	_	_
+20	''	_	PUNCT	''	_	10	punct	_	_
+
+# sent_id = english-penn-test-2163
+# text = At stake is what Mike Swavely , Compaq 's president of North America operations , calls `` the Holy Grail of the computer industry '' -- the search for `` a real computer in a package so small you can take it everywhere . ''
+1	At	_	ADP	IN	_	2	case	_	_
+2	stake	_	NOUN	NN	_	3	nmod	_	_
+3	is	_	VERB	VBZ	_	0	root	_	_
+4	what	_	PRON	WP	_	3	dobj	_	_
+5	Mike	_	PROPN	NNP	_	6	compound	_	_
+6	Swavely	_	PROPN	NNP	_	16	nsubj	_	_
+7	,	_	PUNCT	,	_	6	punct	_	_
+8	Compaq	_	PROPN	NNP	_	10	nmod:poss	_	_
+9	's	_	PART	POS	_	8	case	_	_
+10	president	_	NOUN	NN	_	6	appos	_	_
+11	of	_	ADP	IN	_	14	case	_	_
+12	North	_	PROPN	NNP	_	14	compound	_	_
+13	America	_	PROPN	NNP	_	14	compound	_	_
+14	operations	_	NOUN	NNS	_	10	nmod	_	_
+15	,	_	PUNCT	,	_	6	punct	_	_
+16	calls	_	VERB	VBZ	_	28	dep	_	_
+17	``	_	PUNCT	``	_	20	punct	_	_
+18	the	_	DET	DT	_	20	det	_	_
+19	Holy	_	PROPN	NNP	_	20	compound	_	_
+20	Grail	_	PROPN	NNP	_	16	xcomp↓	_	_
+21	of	_	ADP	IN	_	24	case	_	_
+22	the	_	DET	DT	_	24	det	_	_
+23	computer	_	NOUN	NN	_	24	compound	_	_
+24	industry	_	NOUN	NN	_	20	nmod	_	_
+25	''	_	PUNCT	''	_	20	punct	_	_
+26	--	_	PUNCT	:	_	28	punct	_	_
+27	the	_	DET	DT	_	28	det	_	_
+28	search	_	NOUN	NN	_	3	nsubj	_	_
+29	for	_	ADP	IN	_	33	case	_	_
+30	``	_	PUNCT	``	_	33	punct	_	_
+31	a	_	DET	DT	_	33	det	_	_
+32	real	_	ADJ	JJ	_	33	amod	_	_
+33	computer	_	NOUN	NN	_	28	nmod	_	_
+34	in	_	ADP	IN	_	36	case	_	_
+35	a	_	DET	DT	_	36	det	_	_
+36	package	_	NOUN	NN	_	33	nmod	_	_
+37	so	_	ADV	RB	_	38	advmod	_	_
+38	small	_	ADJ	JJ	_	36	amod	_	_
+39	you	_	PRON	PRP	_	41	nsubj	_	_
+40	can	_	AUX	MD	_	41	aux	_	_
+41	take	_	VERB	VB	_	38	ccomp	_	_
+42	it	_	PRON	PRP	_	41	dobj	_	_
+43	everywhere	_	ADV	RB	_	41	advmod	_	_
+44	.	_	PUNCT	.	_	3	punct	_	_
+45	''	_	PUNCT	''	_	3	punct	_	_
+
+# sent_id = english-penn-test-2235
+# text = Merrill Lynch & Co. officials `` do n't expect -LCB- margin calls -RCB- to be as big a factor as in 1987 '' because fewer individual investors are buying stock on margin , a spokesman said .
+1	Merrill	_	PROPN	NNP	_	2	compound	_	_
+2	Lynch	_	PROPN	NNP	_	9	nsubj	_	_
+3	&	_	CONJ	CC	_	2	cc	_	_
+4	Co.	_	PROPN	NNP	_	5	compound	_	_
+5	officials	_	NOUN	NNS	_	2	conj	_	_
+6	``	_	PUNCT	``	_	9	punct	_	_
+7	do	_	AUX	VBP	_	9	aux	_	_
+8	n't	_	PART	RB	_	9	neg	_	_
+9	expect	_	VERB	VB	_	36	ccomp↓	_	_
+10	-LCB-	_	PUNCT	-LRB-	_	36	punct	_	_
+11	margin	_	NOUN	NN	_	12	compound	_	_
+12	calls	_	NOUN	NNS	_	36	dobj	_	_
+13	-RCB-	_	PUNCT	-RRB-	_	19	punct	_	_
+14	to	_	PART	TO	_	19	mark	_	_
+15	be	_	VERB	VB	_	19	cop	_	_
+16	as	_	ADV	RB	_	17	advmod	_	_
+17	big	_	ADJ	JJ	_	19	amod	_	_
+18	a	_	DET	DT	_	19	det	_	_
+19	factor	_	NOUN	NN	_	9	xcomp↓	_	_
+20	as	_	ADP	IN	_	19	advmod	_	_
+21	in	_	ADP	IN	_	22	case	_	_
+22	1987	_	NUM	CD	_	20	nmod	_	_
+23	''	_	PUNCT	''	_	36	punct	_	_
+24	because	_	SCONJ	IN	_	29	mark	_	_
+25	fewer	_	ADJ	JJR	_	27	amod	_	_
+26	individual	_	ADJ	JJ	_	27	amod	_	_
+27	investors	_	NOUN	NNS	_	29	nsubj	_	_
+28	are	_	AUX	VBP	_	29	aux	_	_
+29	buying	_	VERB	VBG	_	36	advcl	_	_
+30	stock	_	NOUN	NN	_	29	dobj	_	_
+31	on	_	ADP	IN	_	32	case	_	_
+32	margin	_	NOUN	NN	_	29	nmod	_	_
+33	,	_	PUNCT	,	_	36	punct	_	_
+34	a	_	DET	DT	_	35	det	_	_
+35	spokesman	_	NOUN	NN	_	36	nsubj	_	_
+36	said	_	VERB	VBD	_	0	root	_	_
+37	.	_	PUNCT	.	_	36	punct	_	_
+
+# sent_id = english-penn-test-2289
+# text = In one wild hour of trading , the market managed to accomplish what the Bush administration has been trying to do , unsuccessfully , for weeks .
+1	In	_	ADP	IN	_	4	case	_	_
+2	one	_	NUM	CD	_	4	nummod	_	_
+3	wild	_	ADJ	JJ	_	4	amod	_	_
+4	hour	_	NOUN	NN	_	10	nmod	_	_
+5	of	_	ADP	IN	_	6	case	_	_
+6	trading	_	VERB	VBG	_	4	nmod	_	_
+7	,	_	PUNCT	,	_	10	punct	_	_
+8	the	_	DET	DT	_	9	det	_	_
+9	market	_	NOUN	NN	_	10	nsubj	_	_
+10	managed	_	VERB	VBD	_	0	root	_	_
+11	to	_	PART	TO	_	12	mark	_	_
+12	accomplish	_	VERB	VB	_	10	xcomp	_	_
+13	what	_	PRON	WP	_	10	dobj	_	_
+14	the	_	DET	DT	_	16	det	_	_
+15	Bush	_	PROPN	NNP	_	16	compound	_	_
+16	administration	_	NOUN	NN	_	19	nsubj	_	_
+17	has	_	AUX	VBZ	_	19	aux	_	_
+18	been	_	AUX	VBN	_	19	aux	_	_
+19	trying	_	VERB	VBG	_	12	ccomp	_	_
+20	to	_	PART	TO	_	21	mark	_	_
+21	do	_	VERB	VB	_	19	xcomp↓	_	_
+22	,	_	PUNCT	,	_	19	punct	_	_
+23	unsuccessfully	_	ADV	RB	_	19	advmod	_	_
+24	,	_	PUNCT	,	_	19	punct	_	_
+25	for	_	ADP	IN	_	26	case	_	_
+26	weeks	_	NOUN	NNS	_	19	nmod	_	_
+27	.	_	PUNCT	.	_	10	punct	_	_
+
