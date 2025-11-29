@@ -162,7 +162,7 @@ def fix_illformed(tree):
         node = head_chosen
         layers_2b_unwrapped = depth-1
 
-        for i in range(layers_2b_unwrapped-1):
+        for _ in range(layers_2b_unwrapped-1):
             prev_node = node
             node = prev_node[0]
 
@@ -173,21 +173,17 @@ def fix_illformed(tree):
         head_chosen = None
         wrong_heads_2b_lowered = []
 
-        heads = [
-            child for child in subtree 
-            if isinstance(child, Tree) # added isinstance(child, Tree) to handle edge cases
-            and isinstance(child[0], str) 
-            ]
+        heads = [child for child in subtree if isinstance(child, Tree) and isinstance(child[0], str)] # added isinstance(child, Tree) to handle edge cases
         
         if len(heads) > 1:
             head_chosen = heads[-2] if heads[-1].label() == "punct" else heads[-1]
-            wrong_heads_2b_lowered = [head for head in heads if id(head) != id(head_chosen)] # unique object
+            wrong_heads_2b_lowered = [head for head in heads if id(head) != id(head_chosen)]  # use id to refer the unique object
         elif len(heads) == 0:
             head_chosen = subtree[-2] if subtree[-1].label() == "punct" else subtree[-1]
 
         return head_chosen, wrong_heads_2b_lowered
         
-    def _lift_chosen_head(head_chosen):
+    def _lift_chosen_head(head_chosen, subtree):
         _, depth = _find_shallowest_leaf(head_chosen)
         unwrapped_head_chosen = _find_siblings(head_chosen, depth)
         head_chosen_index = head_chosen._index
@@ -207,7 +203,7 @@ def fix_illformed(tree):
         
         head_chosen, wrong_heads_2b_lowered = _select_head(subtree)
 
-        # update current subtree
+        # update current tree
         # step 1: record the original positions
         # step 2: remove the subtree
         # step 3: attach the branches back
@@ -218,7 +214,7 @@ def fix_illformed(tree):
                     tree = _build_tree(wrong_head, Tree("dummy", [wrong_head]))
                     _assign_parents(tree)
             else:
-                updated_subtree = _lift_chosen_head(head_chosen)
+                updated_subtree = _lift_chosen_head(head_chosen, subtree)
                 head_chosen, wrong_heads_2b_lowered = _select_head(updated_subtree) 
                
                 if wrong_heads_2b_lowered:
@@ -258,12 +254,11 @@ def tree2sentence(tree, pos_type="UPOS"):
         Add the head ID and dependency relation to the sentence dictionary.
         """
         logger.debug(f"Processing subtree: {subtree}, head_id: {head_id}")
-        upos = subtree.label() if pos_type == "UPOS" else None
-        xpos = subtree.label() if pos_type == "XPOS" else None
-
         for child in subtree: 
             logger.debug(f"Processing child: {child}")
             if isinstance(child, tuple):
+                upos = subtree.label() if pos_type == "UPOS" else None
+                xpos = subtree.label() if pos_type == "XPOS" else None
                 logger.debug(f"Adding token: {child}, head: {head_id}, {pos_type}: {subtree.label()}, deprel: {deprel}")
                 token = {
                     "id": int(child[0]),
