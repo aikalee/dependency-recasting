@@ -3,14 +3,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 sys.path.append(str(ROOT / "src"))
-# from src.preprocessing.pipeline import preprocessing_pipeline
+from src.preprocessing.pipeline import preprocessing_pipeline
 from src.postprocessing.pipeline import postprocessing_pipeline
 
 
 
 def main():
-    postprocessing_pipeline("English", False, "UPOS", ["20", "100"])
-    # preprocessing_pipeline("English", ["train", "dev", "test"], [False, True], "UPOS")
+    # postprocessing_pipeline("Latin", "stanza", "finetune", "no", "yes", 100)
+    # postprocessing_pipeline("English", False, "UPOS", ["20", "100"])
+    preprocessing_pipeline("Polish", ["train", "dev", "test"])
     # DATA = ROOT / "data" / "debug.conllu"
     # for tokenlist, sentencedata in read_conllu(DATA):
     #     tree = sentence2tree(sentencedata, tokenlist)

@@ -259,6 +259,7 @@ def tree2sentence(tree, pos_type="UPOS"):
             if isinstance(child, tuple):
                 upos = subtree.label() if pos_type == "UPOS" else None
                 xpos = subtree.label() if pos_type == "XPOS" else None
+                deprel = deprel.replace("_", ":")
                 logger.debug(f"Adding token: {child}, head: {head_id}, {pos_type}: {subtree.label()}, deprel: {deprel}")
                 token = {
                     "id": int(child[0]),

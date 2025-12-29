@@ -118,11 +118,12 @@ def reconstruct_conllu(tokenlist, transformed_deprels):
 def rewrite_conllu(read_path, write_path, projz_mode=True, pseudo_filter=False) -> None:
     
     sents = read_conllu(read_path)
+    desc = "Projectivizing" if projz_mode else "Deprojectivizing"
 
     with open(write_path, "w") as f:
         pass
-
-    for tokenlist, sentencedata in tqdm(sents, desc="Projectivizing/Deprojectivizing"):
+    
+    for tokenlist, sentencedata in tqdm(sents, desc=desc):
 
         arcs = sentencedata.arcs
         deprels = sentencedata.deprels

@@ -6,43 +6,37 @@ DATA_DIR = BASE_DIR / "data"
 PREDICTION_DIR = BASE_DIR / "predictions"
 
 UD_ABBR_LOOKUP = {
-        "Ancient_Greek": "grc",
-        "Chinese": "zh",
-        "Danish": "da",
-        "English": "en",
-        "Korean": "ko",
-        "Latin": "la",
-        "Old_East_Slavic": "orv",
-        "Urdu": "ur"
+    "Ancient_Greek": "grc",
+    "Czech": "cs",
+    "Dutch": "nl",
+    "English": "en",   
+    "Polish": "pl",
+    "Russian": "ru"
     }
 
 # language code reference: https://github.com/stanfordnlp/stanza/blob/dev/stanza/models/common/constant.py
 PTB_ABBR_LOOKUP = {
     "Ancient_Greek": "grc",
-    "Chinese": "zh-hant",
-    "Danish": "da",
+    "Czech": "cs",
+    "Dutch": "nl",
     "English": "en",
-    "Korean": "ko",
-    "Latin": "la",
-    "Old_East_Slavic": "orv",
-    "Urdu": "ur"
-}
+    "Polish": "pl",
+    "Russian": "ru"
+    }
 
 TREEBANK_LOOKUP = {
-        "Ancient_Greek": "Perseus",
-        "Chinese": "GSD",
-        "Danish": "DDT",
-        "English": "Penn",
-        "Korean": "GSD",
-        "Latin": "UDante",
-        "Old_East_Slavic": "RNC",
-        "Urdu": "UDTB"
+    "Ancient_Greek": "Perseus",
+    "Czech": "PDT",
+    "Dutch": "Alpino",
+    "English": "Penn",
+    "Polish": "LFG",
+    "Russian": "SynTagRus"
     }
      
 
-def get_projz_file_path(lang, split, pseudo_filter=False):
+def get_projz_file_path(lang, split):
     """
-    file name: lang_method_split_(pseudo)
+    file name: lang_method_split
     """
 
     if split not in ["train", "test", "dev"]:
@@ -50,16 +44,10 @@ def get_projz_file_path(lang, split, pseudo_filter=False):
 
     ud_abbr = UD_ABBR_LOOKUP[lang]
     treebank = TREEBANK_LOOKUP[lang]
-
-
    
-    projz = f"{treebank.lower()}-ud-"
-    pseudo = "_pseudo" if pseudo_filter else ""
-
-    
-    output_dir = DATA_DIR / "processed" / "ud" / f"UD_{lang}-{treebank}"
-    read_path = DATA_DIR / "raw" /f"UD_{lang}-{treebank}" / f"{ud_abbr}_{projz}{split}.conllu"
-    write_path = output_dir / f"{ud_abbr}_most-crossed_{split}{pseudo}.conllu"
+    read_path = DATA_DIR / "raw" /f"UD_{lang}-{treebank}" / f"{ud_abbr}_{treebank.lower()}-ud-{split}.conllu"
+    output_dir = DATA_DIR / "processed" / "projectivized" / f"UD_{lang}-{treebank}"
+    write_path = output_dir / f"{ud_abbr}__{split}.conllu"
     
     if not read_path.exists():
             raise FileNotFoundError(f"The file '{read_path}' does not exist.")
@@ -73,18 +61,25 @@ def get_projz_file_path(lang, split, pseudo_filter=False):
     
     return read_path, write_path
 
-def get_deprojz_file_path(lang, epoch, pseudo_filter=False):
+def get_deprojz_file_path(lang, model, bert="frozen", charlm="yes", pretrain="yes", epochs=20):
     """
     file name: lang_method_split_(pseudo)
     """
+    if model not in ["stanza", "bnp"]:
+        raise ValueError("Model must be either `stanza` or `bnp`.")
     ptb_abbr = PTB_ABBR_LOOKUP[lang]
-    treebank = TREEBANK_LOOKUP[lang]
-
-    pseudo = "pseudo" if pseudo_filter else "none"
-    pos = "upos"
     
-    read_path = PREDICTION_DIR / f"{ptb_abbr}-{treebank.lower()}-ud,filter={pseudo},method=most-crossed,pos={pos},epoch={epoch}.conllu"
-    write_path = PREDICTION_DIR / f"{ptb_abbr}-{treebank.lower()}-ud,filter={pseudo},method=most-crossed-deprojz,pos={pos},epoch={epoch}.conllu"
+
+    if model == "stanza":
+        read_write_dir = PREDICTION_DIR / "stanza" 
+        epoch_info = f",epochs={epochs}"
+    elif model == "bnp":
+        read_write_dir = PREDICTION_DIR / "bnp"
+        epoch_info = ""
+
+    read_path = read_write_dir / f"lang={ptb_abbr},bert={bert},charlm={charlm},pretrain={pretrain}{epoch_info}.conllu"
+    write_path = read_write_dir / f"lang={ptb_abbr},bert={bert},charlm={charlm},pretrain={pretrain}{epoch_info},deprojz=yes.conllu"
+  
     
     if not read_path.exists():
             raise FileNotFoundError(f"The file '{read_path}' does not exist.")
@@ -94,10 +89,10 @@ def get_deprojz_file_path(lang, epoch, pseudo_filter=False):
     
     return read_path, write_path
 
-def get_tree_file_path(lang="Chinese", split="train", pos="UPOS", pseudo_filter=True):
+def get_tree_file_path(lang="Chinese", split="train"):
     """
-    Input file name: lang_method_split_(pseudo)
-    Output dir name: lang=en-penn-ud,filter=none,method=most-crossed,pos=upos
+    Input file name: lang_method_split
+    Output dir name: lang=en
     Output file name: en__train.mrg
     """
 
@@ -107,22 +102,10 @@ def get_tree_file_path(lang="Chinese", split="train", pos="UPOS", pseudo_filter=
 
     ud_abbr = UD_ABBR_LOOKUP[lang]
     ptb_abbr = PTB_ABBR_LOOKUP[lang]
-    treebank = TREEBANK_LOOKUP[lang].lower()
-
-
-    projz = "most-crossed"
-    pos = pos.lower()
-
-    if pseudo_filter:
-        pseudo_in = "_pseudo" 
-        pseudo_out = "pseudo"
-    else:
-        pseudo_in = ""
-        pseudo_out = "none"
-    
+    treebank = TREEBANK_LOOKUP[lang]
    
-    read_path = DATA_DIR / "processed" / "ud" / f"UD_{lang}-{treebank}/{ud_abbr}_{projz}_{split}{pseudo_in}.conllu"
-    output_dir = DATA_DIR / "processed" / "stanza" / f"{ud_abbr}-{treebank}-ud,filter={pseudo_out},method={projz},pos={pos}"     
+    read_path = DATA_DIR / "processed" / "projectivized" / f"UD_{lang}-{treebank}/{ud_abbr}__{split}.conllu"
+    output_dir = DATA_DIR / "processed" / "constituentized" / f"lang={ptb_abbr}"     
       
     if not read_path.exists():
         raise FileNotFoundError(f"The file '{read_path}' does not exist.")
@@ -137,20 +120,25 @@ def get_tree_file_path(lang="Chinese", split="train", pos="UPOS", pseudo_filter=
     
     return read_path, write_path
 
-def get_conllu_file_path(lang, epoch, pos="UPOS", pseudo_filter=True):
+def get_conllu_file_path(lang, model, bert="frozen", charlm="yes", pretrain="yes", epochs=20):
     """
-    Input file name: lang=en-penn-ud,filter=none,method=most-crossed,pos=upos.mrg
-    Output file name: lang=en-penn-ud,filter=none,method=most-crossed,pos=upos.conllu
+    Input file name: lang=en,bert=frozen,charlm=yes,pretrain=yes,epochs=20.mrg
+    Output file name: lang=en,bert=frozen,charlm=yes,pretrain=yes,epochs=20.conllu
     """
-    ptb_abbr = PTB_ABBR_LOOKUP[lang]
-    treebank = TREEBANK_LOOKUP[lang].lower()
+    if model not in ["stanza", "bnp"]:
+        raise ValueError("Model must be either `stanza` or `bnp`.")
+    
+    ud_abbr = UD_ABBR_LOOKUP[lang]
 
-    projz = "most-crossed"
-    pos = pos.lower()
-    pseudo = "pseudo" if pseudo_filter else "none"
-
-    read_path = PREDICTION_DIR / f"{ptb_abbr}-{treebank}-ud,filter={pseudo},method={projz},pos={pos},epoch={epoch}.mrg"
-    write_path = PREDICTION_DIR / f"{ptb_abbr}-{treebank}-ud,filter={pseudo},method={projz},pos={pos},epoch={epoch}.conllu"
+    if model == "stanza":
+        read_write_dir = PREDICTION_DIR / "stanza" 
+        epoch_info = f",epochs={epochs}"
+    elif model == "bnp":
+        read_write_dir = PREDICTION_DIR / "bnp"
+        epoch_info = ""
+    
+    read_path = read_write_dir / f"lang={ud_abbr},bert={bert},charlm={charlm},pretrain={pretrain}{epoch_info}.mrg"
+    write_path = read_write_dir / f"lang={ud_abbr},bert={bert},charlm={charlm},pretrain={pretrain}{epoch_info}.conllu"
             
     if not read_path.exists():
         raise FileNotFoundError(f"The file '{read_path}' does not exist.")
@@ -164,23 +152,28 @@ def get_conllu_file_path(lang, epoch, pos="UPOS", pseudo_filter=True):
     
     return read_path, write_path
 
-def get_matched_file_path(lang, epoch, pos="UPOS", pseudo_filter=False):
+def get_matched_file_path(lang, model, bert="frozen", charlm="yes", pretrain="yes", epochs=20):
     """
     Input file name: en-penn-ud,filter=none,method=most-crossed-deprojz,pos=upos,epoch=20.conllu
     Output file name: en-penn-ud,filter=none,method=most-crossed-deprojz,pos=upos,epoch=20,matched=yes.conllu
     """
+    if model not in ["stanza", "bnp"]:
+        raise ValueError("Model must be either `stanza` or `bnp`.")
+    
     ud_abbr = UD_ABBR_LOOKUP[lang]
-    ptb_abbr = PTB_ABBR_LOOKUP[lang]
     treebank = TREEBANK_LOOKUP[lang]
 
-    projz = "most-crossed"
-    pos = pos.lower()
-    pseudo = "pseudo" if pseudo_filter else "none"
+    if model == "stanza":
+        read_write_dir = PREDICTION_DIR / "stanza" 
+        epoch_info = f",epochs={epochs}"
+    elif model == "bnp":
+        read_write_dir = PREDICTION_DIR / "bnp"
+        epoch_info = ""
 
-    read_system_path = PREDICTION_DIR / f"{ptb_abbr}-{treebank.lower()}-ud,filter={pseudo},method={projz}-deprojz,pos={pos},epoch={epoch}.conllu"
+    read_system_path = read_write_dir / f"lang={ud_abbr},bert={bert},charlm={charlm},pretrain={pretrain}{epoch_info},deprojz=yes.conllu"
     read_gold_path = DATA_DIR / "raw" / f"UD_{lang}-{treebank}/{ud_abbr}_{treebank.lower()}-ud-test.conllu"
-    write_system_path = PREDICTION_DIR / f"{ptb_abbr}-{treebank.lower()}-ud,filter={pseudo},method={projz}-deprojz,pos={pos},epoch={epoch},matched=yes.conllu"
-    write_gold_path = DATA_DIR / "processed" / "gold" / f"UD_{lang}-{treebank}/{ud_abbr}_{treebank.lower()}-ud-test,epoch={epoch},matched=yes.conllu"
+    write_system_path = read_write_dir / f"lang={ud_abbr},bert={bert},charlm={charlm},pretrain={pretrain}{epoch_info},deprojz=yes,matched=yes.conllu"
+    write_gold_path = DATA_DIR / "processed" / "gold" / f"UD_{lang}-{treebank}/lang={ud_abbr},bert={bert},charlm={charlm},pretrain={pretrain}{epoch_info},matched=yes.conllu"
             
     for read_path in [read_system_path, read_gold_path]:
         if not read_path.exists():

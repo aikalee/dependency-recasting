@@ -1,17 +1,25 @@
+#!/bin/bash
+
+# Paths
+MY_PROJECT="/root/autodl-tmp/recasting"
+BNP_REPO="/root/autodl-tmp/self-attentive-parser"
 DATA="en-penn-ud,filter=none,method=most-crossed,pos=upos"
 
-# === Force Stanza to read the file as UTF-8 ===
+# Force UTF-8
 export PYTHONUTF8=1
 
-# === Find the training scripts `src.main` ===
-export PYTHONPATH="/root/autodl-tmp/self-attentive-parser"
+# BNP code lives here
+export PYTHONPATH="$BNP_REPO"
 
-python -m src.main \
---model-path-base bnp-models/$DATA \
---train-path data/processed/$DATA/en__train.mrg \
---dev-path data/processed/$DATA/dev__train.mrg \
---subbatch-max-tokens 3000 \
---batch-size 16 \
---numpy-seed 1234 \
---use-pretrained \
---pretrained-model /root/autodl-tmp/roberta-base
+# Run BNP from BNP directory
+cd "$BNP_REPO" || exit 1
+
+python -m src.main train \
+  --test-path "$MY_PROJECT/data/$DATA/en__test.mrg" \
+  --evalb-dir "$BNP_REPO/EVALB" \
+  --subbatch-max-tokens 3000 \
+  --numpy-seed 1234 \
+  --use-pretrained \
+  --pretrained-model /root/autodl-tmp/roberta-base \
+  --model-path-base "$MY_PROJECT/bnp-models/$DATA"
+
