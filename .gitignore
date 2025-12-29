@@ -2,7 +2,11 @@
 __pycache__/
 *.pyc
 
-data/raw/
+data/
+predictions/
 
 debug.*
 eval.py
+
+README_files
+README.html

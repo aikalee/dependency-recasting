@@ -27,15 +27,18 @@ def remove_mismatched_sentences(read_system_path, read_gold_path, write_system_p
                     goldout.write(tokenlist2.serialize())
     return mismatched_count       
 
-def postprocessing_pipeline(lang_name,pseudo_flags, pos, epoch):
+def postprocessing_pipeline(lang_name, model, bert="frozen", charlm="yes", pretrain="yes", epochs=20):
+    """
+    Importance: epoch > pos > pseudo_flags
+    """
 
     def ensure_list(arg):
         return arg if isinstance(arg, list) else [arg]
 
     # lang_name = ["Ancient_Greek", "Danish", "English", "Latin", "Old_East_Slavic", "Urdu"] 
-    lang_name, pseudo_flags, pos, epoch = map(
+    lang_name, model, bert, charlm, pretrain, epochs = map(
         ensure_list,
-        (lang_name, pseudo_flags, pos, epoch)
+        (lang_name, model, bert, charlm, pretrain, epochs)
     )
             
     # lang_name = ["English"]
@@ -45,21 +48,21 @@ def postprocessing_pipeline(lang_name,pseudo_flags, pos, epoch):
     # epoch = ["20", "100"]
 
     # === Tree conversion ===
-    paras = list(product(lang_name, epoch, pos, pseudo_flags))
+    paras = list(product(lang_name, model, bert, charlm, pretrain, epochs))
     
     for para in paras:
         read_path, write_path = get_conllu_file_path(*para)
         mrg_to_conllu(read_path, write_path)
 
     # === Deprojectivization ===
-    paras = list(product(lang_name, epoch, pseudo_flags))
+    paras = list(product(lang_name, model, bert, charlm, pretrain, epochs))
     
     for para in paras:
         read_path, write_path = get_deprojz_file_path(*para)
         rewrite_conllu(read_path, write_path, False)
 
     # === Remove mismatched sentences ===
-    paras = list(product(lang_name, epoch))
+    paras = list(product(lang_name, model, bert, charlm, pretrain, epochs))
     for para in paras:
         read_system_path, read_gold_path, write_system_path, write_gold_path = get_matched_file_path(*para)
         mismatched_count = remove_mismatched_sentences(read_system_path, read_gold_path, write_system_path, write_gold_path)

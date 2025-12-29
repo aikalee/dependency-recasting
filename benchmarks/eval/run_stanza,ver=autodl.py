@@ -149,21 +149,19 @@ def no_retag_pipeline(input_path, output_path, const_model_file):
     write_to_file(predicted_trees, output_path)
 
 def main():
-    # INPUT_FILE = f"/root/autodl-tmp/recasting/data/en_penn-ud-test.txt"
-    INPUT_FILE = f"/root/autodl-tmp/recasting/data/en_penn-ud-test.conllu"
-    DATA = "en-penn-ud,filter=none,method=most-crossed,pos=upos"
-    LANG = DATA.split("-")[0]
+    INPUT_FILE = f"/root/autodl-tmp/recasting/data/la_udante-ud-test.conllu"
+    LANG = "la"
  
-    POS_MODEL = "/root/autodl-tmp/stanza_resources/en/pos/combined_charlm.pt"
-    PRETRAIN_FILE = "/root/autodl-tmp/stanza_resources/en/pretrain/conll17.pt"
-    FORWARD_CHARLM_FILE = "/root/autodl-tmp/stanza_resources/en/forward_charlm/1billion.pt"
-    BACKWARD_CHARLM_FILE = "/root/autodl-tmp/stanza_resources/en/backward_charlm/1billion.pt"
+    POS_MODEL = f"/root/autodl-tmp/stanza_resources/{LANG}/pos/combined_charlm.pt"
+    PRETRAIN_FILE = f"/root/autodl-tmp/stanza_resources/{LANG}/pretrain/conll17.pt"
+    FORWARD_CHARLM_FILE = f"/root/autodl-tmp/stanza_resources/{LANG}/forward_charlm/1billion.pt"
+    BACKWARD_CHARLM_FILE = f"/root/autodl-tmp/stanza_resources/{LANG}/backward_charlm/1billion.pt"
    
-    for EP in ["20", "100"]:
-        MODELNAME = f"en-penn-ud,filter=none,method=most-crossed,pos=upos,epoch={EP}"
-        CONST_MODEL = f"/root/autodl-tmp/recasting/models/{MODELNAME}/{LANG}_transformer_finetuned_constituency_checkpoint.pt"
-        OUTPUT_FILE = f"/root/autodl-tmp/recasting/predictions/{MODELNAME}.mrg"
-        no_retag_pipeline(INPUT_FILE, OUTPUT_FILE, CONST_MODEL)
+    # for EP in ["100"]:
+    MODELNAME = f"lang=la,bert=finetune,charlm=no,pretrain=yes,epochs=100"
+    CONST_MODEL = f"/root/autodl-tmp/recasting/stanza-models/{MODELNAME}/{LANG}_transformer_finetuned_constituency_checkpoint.pt"
+    OUTPUT_FILE = f"/root/autodl-tmp/recasting/predictions/stanza/{MODELNAME}.mrg"
+    no_retag_pipeline(INPUT_FILE, OUTPUT_FILE, CONST_MODEL)
 
 if __name__ == "__main__":
     main()

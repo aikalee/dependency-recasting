@@ -14,12 +14,11 @@ export PYTHONPATH="$BNP_REPO"
 # Run BNP from BNP directory
 cd "$BNP_REPO" || exit 1
 
-python -m src.main train \
+python -m src.main test \
+  --model-path "$MY_PROJECT/bnp-models/${DATA}_dev=96.22.pt" \
   --test-path "$MY_PROJECT/data/$DATA/en__test.mrg" \
   --evalb-dir "$BNP_REPO/EVALB" \
-  --subbatch-max-tokens 3000 \
-  --numpy-seed 1234 \
-  --use-pretrained \
-  --pretrained-model /root/autodl-tmp/roberta-base \
-  --model-path-base "$MY_PROJECT/bnp-models/$DATA"
+  --subbatch-max-tokens 6000 \
+  --output-path "$MY_PROJECT/predictions/bnp/$DATA.mrg" \
+  --no-predict-tags 
 
