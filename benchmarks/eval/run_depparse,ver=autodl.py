@@ -21,8 +21,8 @@ def inference_pipeline(model_file, shorthand, input_path, output_path):
             'pretrain': False,
             'sample_train': 1.0,
             }
-        batch = DataLoader(doc, batch_size=5000, args=args, pretrain=None, vocab=None, evaluation=True,
-                    sort_during_eval=True,
+        batch = DataLoader(doc, batch_size=5000, args=args, pretrain=None, vocab=None, evaluation=False,
+                    sort_during_eval=False,
                     min_length_to_batch_separately=200)
         return doc, batch
     
@@ -52,10 +52,11 @@ def inference_pipeline(model_file, shorthand, input_path, output_path):
     CoNLL.write_doc2conll(preds, output_path)
 
 def main():
-    SHORTHAND = 'en_ptb'
-    MODEL_FILE = f'/root/autodl-tmp/recasting/depparse-models/UD_English-Penn/{MODELNAME}/{SHORTHAND}_transformer_parser_checkpoint.pt"'
-    INPUT_FILE = '/root/autodl-tmp/recasting/data/UD_English-Penn/en_penn-test.conllu'
-    OUTPUT_FILE = '/root/autodl-tmp/recasting/predictions/'
-    inference_pipeline()
+    SHORTHAND = "en_ptb"
+    MODELNAME = "lang=en,bert=finetune,charlm=yes,pretrain=yes,epochs=100"
+    MODEL_FILE = f"/root/autodl-tmp/recasting/depparse-models/UD_English-Penn/{MODELNAME}/{SHORTHAND}_transformer_parser_checkpoint.pt"
+    INPUT_FILE = "/root/autodl-tmp/recasting/data/UD_English-Penn/en_penn-test.conllu"
+    OUTPUT_FILE = "/root/autodl-tmp/recasting/predictions/"
+    inference_pipeline(MODEL_FILE, SHORTHAND, INPUT_FILE, OUTPUT_FILE)
 
     

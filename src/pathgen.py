@@ -129,6 +129,7 @@ def get_conllu_file_path(lang, model, bert="frozen", charlm="yes", pretrain="yes
         raise ValueError("Model must be either `stanza` or `bnp`.")
     
     ud_abbr = UD_ABBR_LOOKUP[lang]
+    treebank = TREEBANK_LOOKUP[lang]
 
     if model == "stanza":
         read_write_dir = PREDICTION_DIR / "stanza" 
@@ -137,20 +138,23 @@ def get_conllu_file_path(lang, model, bert="frozen", charlm="yes", pretrain="yes
         read_write_dir = PREDICTION_DIR / "bnp"
         epoch_info = ""
     
-    read_path = read_write_dir / f"lang={ud_abbr},bert={bert},charlm={charlm},pretrain={pretrain}{epoch_info}.mrg"
+    read_tree_path = read_write_dir / f"lang={ud_abbr},bert={bert},charlm={charlm},pretrain={pretrain}{epoch_info}.mrg"
+    read_orig_path = DATA_DIR / "raw" / f"UD_{lang}-{treebank}" / f"{ud_abbr}_{treebank.lower()}-ud-test.conllu"
     write_path = read_write_dir / f"lang={ud_abbr},bert={bert},charlm={charlm},pretrain={pretrain}{epoch_info}.conllu"
             
-    if not read_path.exists():
-        raise FileNotFoundError(f"The file '{read_path}' does not exist.")
+    if not read_tree_path.exists():
+        raise FileNotFoundError(f"The file '{read_tree_path}' does not exist.")
+    if not read_orig_path.exists():
+        raise FileNotFoundError(f"The file '{read_orig_path}' does not exist.")
     
     # if not os.path.exists(write_path):
     #     os.makedirs(write_path, exist_ok=True)
     #     print(f"Created: {write_path}")
 
-    print(f"Loading from {read_path}...")
+    print(f"Loading from {read_tree_path}...")
     print(f"Writing into {write_path}...")
     
-    return read_path, write_path
+    return read_tree_path, read_orig_path, write_path
 
 def get_matched_file_path(lang, model, bert="frozen", charlm="yes", pretrain="yes", epochs=20):
     """
