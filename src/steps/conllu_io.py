@@ -131,7 +131,6 @@ def rewrite_conllu(read_path, write_path, projz_mode=True, pseudo_filter=False) 
 
         if projz_mode:
             if is_non_proj(arcs):
-                
                 projz_arcs = projectivize(arcs, symmetric_counting=True, dlookup=dlookup)
                 projz_deprels = relabel(deprels, projz_arcs)      
                 tokenlist = reconstruct_conllu(tokenlist, projz_deprels)    

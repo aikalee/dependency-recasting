@@ -1,10 +1,10 @@
-from conllu import TokenList
+from conllu import TokenList, parse_incr
 from nltk.tree import Tree
 from tqdm import tqdm
 
 from steps.dep2const import tree2sentence
 
-def mrg_to_conllu(read_path, write_path):
+def mrg_to_conllu(lang, read_tree_path, read_conllu_path, write_path):
     illformed_count = 0
     total_count = 0
     sent_id = 1
@@ -12,14 +12,11 @@ def mrg_to_conllu(read_path, write_path):
     with open(write_path, "w", encoding="utf-8") as fout:
         pass
 
-    with open(read_path, "r", encoding="utf-8") as fin:
-        for line in tqdm(fin, desc="Converting trees to sentences"):
-            tokens, is_illformed = tree2sentence(Tree.fromstring(line))
-            metadata = {
-                "sent_id": sent_id,
-                "text": " ".join([token["form"] for token in tokens])
-            }
-            conllu = TokenList(tokens, metadata=metadata).serialize()
+    with open(read_tree_path, "r", encoding="utf-8") as ftree, \
+         open(read_conllu_path, "r", encoding="utf-8") as fconll:
+        for tree, tokenlist in tqdm(zip(ftree, parse_incr(fconll)), desc="Converting trees to sentences"):
+            tokens, is_illformed = tree2sentence(lang, Tree.fromstring(tree))
+            conllu = TokenList(tokens, metadata=tokenlist.metadata).serialize()
             
             sent_id += 1 
             total_count += 1

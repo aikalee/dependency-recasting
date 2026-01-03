@@ -47,7 +47,7 @@ def sentence2tree(sentencedata, tokenlist, pos_type="UPOS", add_starting_node=Tr
                     pos = pos.replace(":", "_")
                 form = tokenlist[current_id-1]['form']
                 if replace_bracket:
-                    form = form.replace("（", "-LRBC-").replace("）", "-RRBC-").replace("(", "-LRBE-").replace(")", "-RRBE-")
+                    form = form.replace("（", "-LRB-").replace("）", "-RRB-").replace("(", "-LRB-").replace(")", "-RRB-") # Penn-treebank standard
                 branches.append(Tree(pos, [form]))
                     
             else:
@@ -233,7 +233,7 @@ def fix_illformed(tree):
                 queue.append(child)
     return tree
 
-def tree2sentence(tree, pos_type="UPOS"):
+def tree2sentence(lang, tree, pos_type="UPOS"):
     """
     Recursively extracts from a Tree object (from sentence2tree) and returns the sentence as a dictionary of words
         dictionary format: {id: {"form": word, "head": head_id, "deprel": dep_rel}}
@@ -260,10 +260,11 @@ def tree2sentence(tree, pos_type="UPOS"):
                 upos = subtree.label() if pos_type == "UPOS" else None
                 xpos = subtree.label() if pos_type == "XPOS" else None
                 deprel = deprel.replace("_", ":")
+                form = child[1].replace("-LRB-", "（").replace("-RRB-", "）") if lang == "Chinese" else child[1].replace("-LRB-", "(").replace("-RRB-", ")")
                 logger.debug(f"Adding token: {child}, head: {head_id}, {pos_type}: {subtree.label()}, deprel: {deprel}")
                 token = {
                     "id": int(child[0]),
-                    "form": child[1],
+                    "form": form,
                     "lemma": None,
                     "upos": upos,
                     "xpos": xpos,

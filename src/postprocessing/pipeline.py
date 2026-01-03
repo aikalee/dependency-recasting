@@ -51,8 +51,8 @@ def postprocessing_pipeline(lang_name, model, bert="frozen", charlm="yes", pretr
     paras = list(product(lang_name, model, bert, charlm, pretrain, epochs))
     
     for para in paras:
-        read_path, write_path = get_conllu_file_path(*para)
-        mrg_to_conllu(read_path, write_path)
+        read_tree_path, read_orig_path, write_path = get_conllu_file_path(*para)
+        mrg_to_conllu(lang_name, read_tree_path, read_orig_path, write_path)
 
     # === Deprojectivization ===
     paras = list(product(lang_name, model, bert, charlm, pretrain, epochs))
@@ -62,11 +62,11 @@ def postprocessing_pipeline(lang_name, model, bert="frozen", charlm="yes", pretr
         rewrite_conllu(read_path, write_path, False)
 
     # === Remove mismatched sentences ===
-    paras = list(product(lang_name, model, bert, charlm, pretrain, epochs))
-    for para in paras:
-        read_system_path, read_gold_path, write_system_path, write_gold_path = get_matched_file_path(*para)
-        mismatched_count = remove_mismatched_sentences(read_system_path, read_gold_path, write_system_path, write_gold_path)
-        print(f"Number of mismatched sentences: {mismatched_count}")
+    # paras = list(product(lang_name, model, bert, charlm, pretrain, epochs))
+    # for para in paras:
+    #     read_system_path, read_gold_path, write_system_path, write_gold_path = get_matched_file_path(*para)
+    #     mismatched_count = remove_mismatched_sentences(read_system_path, read_gold_path, write_system_path, write_gold_path)
+    #     print(f"Number of mismatched sentences: {mismatched_count}")
 
 
 def main():
