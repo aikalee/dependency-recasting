@@ -3,7 +3,7 @@ from conllu import parse_incr
 from tqdm import tqdm
 
 from pathgen import get_deprojz_file_path, get_conllu_file_path, get_matched_file_path
-from src.steps.conllu_io import rewrite_conllu
+from src.common.conllu_io import rewrite_conllu
 from src.postprocessing.mrg_to_conllu import mrg_to_conllu
 
 def remove_mismatched_sentences(read_system_path, read_gold_path, write_system_path, write_gold_path):

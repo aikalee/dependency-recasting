@@ -1,5 +1,5 @@
-from src.steps.conllu_io import read_conllu
-from src.steps.dep2const import sentence2tree
+from src.common.conllu_io import read_conllu
+from src.preprocessing.dep2const import sentence2tree
 from itertools import product
 from tqdm import tqdm
 
