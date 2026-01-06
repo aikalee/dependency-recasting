@@ -11,7 +11,7 @@ echo "Now running in: $(pwd)"
 
 # EPOCH=("20" "100")
 
-LANG="Polish"
+LANG="English"
 
 declare -A ptb_abbr
 ptb_abbr["English"]="en"
@@ -21,7 +21,7 @@ declare -A treebank
 treebank["English"]="Penn"
 treebank["Polish"]="LFG"
 
-OUTPUT_DIR="results/stanza"
+OUTPUT_DIR="results/stanza/rule_based"
 mkdir -p "$OUTPUT_DIR"
 
 # for EP in "${EPOCH[@]}"; do
@@ -31,7 +31,7 @@ TBLOWER="${treebank[$LANG],,}"
 
 MODELNAME="lang=${ptb_abbr[$LANG]},bert=finetune,charlm=no,pretrain=yes,epochs=100,deprojz=yes"
 
-SYSFILE="predictions/stanza/${MODELNAME}.conllu"
+SYSFILE="predictions/stanza/rule_based/${MODELNAME}.conllu"
 GOLDFILE="data/raw/UD_${LANG}-${treebank[$LANG]}/${ptb_abbr[$LANG]}_${TBLOWER}-ud-test.conllu"
 
 OUTPUT="$OUTPUT_DIR/validation,${MODELNAME}.txt"

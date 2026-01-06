@@ -1,8 +1,8 @@
 from itertools import product
 
-from src.pathgen import get_projz_file_path, get_tree_file_path
+from src.pathgen import get_projz_file_path, get_dep2const_file_path
 from common.conllu_io import rewrite_conllu
-from src.preprocessing.conllu_to_mrg import conllu_to_mrg
+from src.common.preprocessing.conllu_to_mrg import conllu_to_mrg
 
 
 def preprocessing_pipeline(lang_name, split_name):
@@ -32,7 +32,7 @@ def preprocessing_pipeline(lang_name, split_name):
     paras = list(product(lang_name, split_name))
       
     for para in paras:
-        read_path, write_path = get_tree_file_path(*para)
+        read_path, write_path = get_dep2const_file_path(*para)
         conllu_to_mrg(read_path, write_path)
 
 
