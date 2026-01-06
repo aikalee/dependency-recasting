@@ -1,7 +1,7 @@
 from itertools import product
 
 from src.pathgen import get_projz_file_path, get_tree_file_path
-from steps.conllu_io import rewrite_conllu
+from common.conllu_io import rewrite_conllu
 from src.preprocessing.conllu_to_mrg import conllu_to_mrg
 
 

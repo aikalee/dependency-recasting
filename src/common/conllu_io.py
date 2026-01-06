@@ -7,8 +7,8 @@ from dataclasses import dataclass
 from itertools import product
 from typing import Optional
 
-from src.steps.projectivize import is_non_proj, get_non_proj_arcs, projectivize, relabel
-from src.steps.deprojectivize import deprojectivize_by_head, deprojectivize_by_path, is_projz
+from src.preprocessing.projectivize import is_non_proj, get_non_proj_arcs, projectivize, relabel
+from src.postprocessing.deprojectivize import deprojectivize_by_head, deprojectivize_by_path, is_projz
 
 
 @dataclass

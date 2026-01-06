@@ -3,7 +3,7 @@ from functools import reduce
 from itertools import product
 from operator import mul
 
-from src.steps.projectivize import get_non_proj_arcs
+from src.preprocessing.projectivize import get_non_proj_arcs
 
 def is_projz(deprels):
 
@@ -296,7 +296,6 @@ def deprojectivize_by_path(sentencedata, closeness=True):
         if not all_seen_parent.issubset(path_candidate_lookup):
             deprojz_deprels = _remove_arrows(deprojz_deprels)
 
-    # print(deprojz_deprels)
     return deprojz_deprels
 
 

@@ -17,10 +17,13 @@ def write_to_file(predicted_trees, output_path):
     
         # === Create/clear output file ===
         with open(output_path, "w", encoding="utf-8") as fout:
-            for pred in predicted_trees:
-                tree = pred.predictions[0].tree
-                fout.write(str(tree))
-                fout.write("\n")
+                for pred in predicted_trees:
+                    tree = pred.predictions[0].tree
+                    fout.write(str(tree))
+                    fout.write("\n")
+        
+                
+
     
         print(f"Done! Predictions written to {output_path}")
 
@@ -133,12 +136,13 @@ def no_retag_pipeline(input_path, output_path, const_model_file):
         const_model.eval()
         return const_model
     
-    def parse_sentences(const_model, tagged_sentences):
+    def parse_sentences(const_model, tagged_sentences, keep_state):
         predicted_trees = const_model.parse_sentences_no_grad(
             data_iterator=iter(tqdm(tagged_sentences, desc="Constituency parsing")), 
             build_batch_fn=const_model.build_batch_from_tagged_words, 
             batch_size=8, 
             transition_choice=const_model.predict, 
+            keep_state=keep_state,
             keep_scores=False
             )
         return predicted_trees
@@ -161,7 +165,7 @@ def main():
     MODELNAME = f"lang=la,bert=finetune,charlm=no,pretrain=yes,epochs=100"
     CONST_MODEL = f"/root/autodl-tmp/recasting/stanza-models/{MODELNAME}/{LANG}_transformer_finetuned_constituency_checkpoint.pt"
     OUTPUT_FILE = f"/root/autodl-tmp/recasting/predictions/stanza/{MODELNAME}.mrg"
-    no_retag_pipeline(INPUT_FILE, OUTPUT_FILE, CONST_MODEL)
+    no_retag_pipeline(INPUT_FILE, OUTPUT_FILE, CONST_MODEL, True)
 
 if __name__ == "__main__":
     main()
