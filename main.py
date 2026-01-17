@@ -3,15 +3,17 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 sys.path.append(str(ROOT / "src"))
-from src.preprocessing.pipeline import preprocessing_pipeline
-from src.postprocessing.pipeline import postprocessing_pipeline
+from src.common.preprocessing.pipeline import preprocessing_pipeline
+from src.common.postprocessing.rule_based_pipeline import postprocessing_pipeline
+# from src.common.postprocessing.neural_pipeline import postprocessing_pipeline
+
 
 
 
 def main():
-    # postprocessing_pipeline("Latin", "stanza", "finetune", "no", "yes", 100)
+    postprocessing_pipeline("English", "finetune", "no", "yes", 100, False)
     # postprocessing_pipeline("English", False, "UPOS", ["20", "100"])
-    preprocessing_pipeline("Polish", ["train", "dev", "test"])
+    # preprocessing_pipeline("Chinese", ["train", "dev", "test"])
     # postprocessing_pipeline("Polish", "stanza", "finetune", "no", "yes", 100)
     # DATA = ROOT / "data" / "debug.conllu"
     # for tokenlist, sentencedata in read_conllu(DATA):

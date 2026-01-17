@@ -2,7 +2,7 @@ from conllu import TokenList, parse_incr
 from nltk.tree import Tree
 from tqdm import tqdm
 
-from src.postprocessing.const2dep import tree2sentence
+from src.common.postprocessing.const2dep import tree2sentence
 
 def mrg_to_conllu(lang, read_tree_path, read_conllu_path, write_path):
     illformed_count = 0

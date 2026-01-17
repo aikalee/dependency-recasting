@@ -31,4 +31,4 @@ python3 -m stanza.utils.training.run_depparse en_ptb \
     --no_charlm \
     --no_pretrain \
     --save_dir /root/autodl-tmp/recasting/depparse-models/$MODEL \
-    --seed 42
+    --seed 1234

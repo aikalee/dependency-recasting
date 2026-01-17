@@ -191,11 +191,11 @@ def tree2sentence(lang, tree, pos_type="UPOS"):
                 upos = subtree.label() if pos_type == "UPOS" else None
                 xpos = subtree.label() if pos_type == "XPOS" else None
                 deprel = deprel.replace("_", ":")
-                form = child[1].replace("-LRB-", "（").replace("-RRB-", "）") if lang == "Chinese" else child[1].replace("-LRB-", "(").replace("-RRB-", ")")
+                # form = child[1].replace("-LRB-", "（").replace("-RRB-", "）") if lang == "Chinese" else child[1].replace("-LRB-", "(").replace("-RRB-", ")")
                 logger.debug(f"Adding token: {child}, head: {head_id}, {pos_type}: {subtree.label()}, deprel: {deprel}")
                 token = {
                     "id": int(child[0]),
-                    "form": form,
+                    "form": child[1],
                     "lemma": None,
                     "upos": upos,
                     "xpos": xpos,
