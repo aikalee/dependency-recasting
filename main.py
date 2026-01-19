@@ -11,7 +11,8 @@ from src.common.postprocessing.rule_based_pipeline import postprocessing_pipelin
 
 
 def main():
-    postprocessing_pipeline("English", "finetune", "no", "yes", 100, False)
+    # postprocessing_pipeline("English", "finetune", "no", "yes", 100, False)
+    preprocessing_pipeline("English", ["train", "dev", "test"], "XPOS")
     # postprocessing_pipeline("English", False, "UPOS", ["20", "100"])
     # preprocessing_pipeline("Chinese", ["train", "dev", "test"])
     # postprocessing_pipeline("Polish", "stanza", "finetune", "no", "yes", 100)

@@ -27,25 +27,25 @@ def remove_mismatched_sentences(read_system_path, read_gold_path, write_system_p
                     goldout.write(tokenlist2.serialize())
     return mismatched_count       
 
-def postprocessing_pipeline(lang_name, bert="frozen", charlm="yes", pretrain="yes", epochs=20, is_neural=True):
+def postprocessing_pipeline(lang_name, pos="XPOS", epochs=20, is_neural=True):
 
     def ensure_list(arg):
         return arg if isinstance(arg, list) else [arg]
 
-    lang_name, bert, charlm, pretrain, epochs, is_neural = map(
+    lang_name, pos, epochs, is_neural = map(
         ensure_list,
-        (lang_name, bert, charlm, pretrain, epochs, is_neural)
+        (lang_name, pos, epochs, is_neural)
     )
             
     # === Tree conversion ===
-    paras = list(product(lang_name, bert, charlm, pretrain, epochs, is_neural))
+    paras = list(product(lang_name, pos, epochs, is_neural))
     
     for para in paras:
         read_tree_path, read_orig_path, write_path = get_const2dep_file_path(*para)
         mrg_to_conllu(lang_name, read_tree_path, read_orig_path, write_path)
 
     # === Deprojectivization ===
-    paras = list(product(lang_name, bert, charlm, pretrain, epochs, is_neural))
+    paras = list(product(lang_name, pos, epochs, is_neural))
     
     for para in paras:
         read_path, write_path = get_deprojz_file_path(*para)
