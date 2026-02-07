@@ -11,17 +11,28 @@ echo "Now running in: $(pwd)"
 
 # EPOCH=("20" "100")
 
-LANG="English"
+MODE="rule_based"
+LANG="Ancient_Greek"
 
-declare -A ptb_abbr
-ptb_abbr["English"]="en"
-ptb_abbr["Polish"]="pl"
+declare -A ud_abbr
+ud_abbr["Chinese"]="zh"
+ud_abbr["English"]="en"
+ud_abbr["Polish"]="pl"
+ud_abbr["Ancient_Greek"]="grc"
+
+declare -A stnz_abbr
+stnz_abbr["Chinese"]="zh-hans"
+stnz_abbr["English"]="en"
+stnz_abbr["Polish"]="pl"
+stnz_abbr["Ancient_Greek"]="grc"
 
 declare -A treebank
+treebank["Chinese"]="Penn"
 treebank["English"]="Penn"
 treebank["Polish"]="LFG"
+treebank["Ancient_Greek"]="Perseus"
 
-OUTPUT_DIR="results/stanza/rule_based"
+OUTPUT_DIR="results/stanza/${MODE}"
 mkdir -p "$OUTPUT_DIR"
 
 # for EP in "${EPOCH[@]}"; do
@@ -29,10 +40,10 @@ mkdir -p "$OUTPUT_DIR"
 # lowercase the treebank name (Penn → penn)
 TBLOWER="${treebank[$LANG],,}"
 
-MODELNAME="lang=${ptb_abbr[$LANG]},bert=finetune,charlm=no,pretrain=yes,epochs=100,deprojz=yes"
+MODELNAME="lang=${stnz_abbr[$LANG]},pos=upos,epochs=100"
 
-SYSFILE="predictions/stanza/rule_based/${MODELNAME}.conllu"
-GOLDFILE="data/raw/UD_${LANG}-${treebank[$LANG]}/${ptb_abbr[$LANG]}_${TBLOWER}-ud-test.conllu"
+SYSFILE="predictions/stanza/${MODE}/${MODELNAME},deprojz=yes.conllu"
+GOLDFILE="data/raw/UD_${LANG}-${treebank[$LANG]}/${ud_abbr[$LANG]}_${TBLOWER}-ud-test.conllu"
 
 OUTPUT="$OUTPUT_DIR/validation,${MODELNAME}.txt"
 

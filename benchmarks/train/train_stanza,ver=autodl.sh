@@ -1,6 +1,7 @@
 #!/bin/bash
 
-DATA="en-penn-ud,filter=none,method=most-crossed,pos=upos"
+DATA="lang=grc,pos=upos"
+MODEL="${DATA},epochs=100"
 
 # === Force Stanza to read the file as UTF-8 ===
 export PYTHONUTF8=1
@@ -9,7 +10,7 @@ export PYTHONUTF8=1
 export CONSTITUENCY_BASE="/root/autodl-tmp/recasting"
 
 # === Training data dir ===
-export CONSTITUENCY_DATA_DIR="/root/autodl-tmp/recasting/data/${DATA}"
+export CONSTITUENCY_DATA_DIR="/root/autodl-tmp/recasting/data/upstream_training/${DATA}"
 
 # === Find the training scripts `stanza.utils.training.run_constituency` ===
 export PYTHONPATH="/root/autodl-tmp/stanza"
@@ -26,4 +27,16 @@ export TRANSFORMERS_OFFLINE=1
 export HF_DATASETS_OFFLINE=1
 export HF_HUB_OFFLINE=1
 
-python -m stanza.utils.training.run_constituency en_ --bert_model /root/autodl-tmp/roberta-base --bert_finetune --no_retag --epochs 100 --save_dir root/autodl-tmp/recasting/models/$DATA
+# Options:
+# [--bert_finetune]
+# [--bert_model /root/autodl-tmp/roberta-base] 
+
+python -m stanza.utils.training.run_constituency grc_ \
+    --use_bert \
+    --bert_model /root/autodl-tmp/roberta-base/ \
+    --bert_finetune \
+    --no_charlm \
+    --no_retag \
+    --epochs 100 \
+    --save_dir /root/autodl-tmp/recasting/stanza-models/$MODEL \
+    --seed 1234
