@@ -3,9 +3,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 sys.path.append(str(ROOT / "src"))
-# from src.common.preprocessing.pipeline import preprocessing_pipeline
-from src.downstream.postprocessing.neural_pipeline import postprocessing_pipeline
-from src.downstream.preprocessing.pipeline import preprocessing_pipeline
+from src.common.preprocessing.pipeline import common_preprocessing_pipeline
+from src.common.postprocessing.pipeline import rulebased_postprocessing_pipeline
+from src.downstream.preprocessing.pipeline import neural_preprocessing_pipeline
+from src.downstream.postprocessing.pipeline import neural_postprocessing_pipeline
 
 # === for debugging ===
 from src.common.conllu_io import read_conllu
@@ -17,7 +18,7 @@ from nltk import Tree
 
 def main():
     
-    postprocessing_pipeline("Ancient_Greek", "UPOS", 100, is_neural=False)
+    neural_postprocessing_pipeline("Ancient_Greek", "UPOS", 100, is_neural=False)
     # preprocessing_pipeline("Ancient_Greek", ["train", "dev", "test"], "UPOS", 100, is_target=False)
     # preprocessing_pipeline("Ancient_Greek", ["train", "dev", "test"], "XPOS")
     # postprocessing_pipeline("English", False, "UPOS", ["20", "100"])

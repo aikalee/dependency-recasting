@@ -2,7 +2,7 @@ from itertools import product
 from pathgen import get_mrg2txt_file_path
 from src.downstream.preprocessing.mrg2txt import mrg2txt
 
-def preprocessing_pipeline(lang_name, split="train", pos="XPOS", epochs=20, is_target=False):
+def neural_preprocessing_pipeline(lang_name, split="train", pos="XPOS", epochs=20, is_target=False):
 
     def ensure_list(arg):
         return arg if isinstance(arg, list) else [arg]

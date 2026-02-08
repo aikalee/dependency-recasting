@@ -5,7 +5,7 @@ from common.conllu_io import rewrite_conllu
 from src.common.preprocessing.conllu_to_mrg import conllu_to_mrg
 
 
-def preprocessing_pipeline(lang_name, split_name, pos):
+def common_preprocessing_pipeline(lang_name, split_name, pos):
     """
     The workflow of the pipeline:
     -> Non-projective sentences in UD CoNLL-U format 

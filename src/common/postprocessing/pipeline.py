@@ -27,7 +27,7 @@ def remove_mismatched_sentences(read_system_path, read_gold_path, write_system_p
                     goldout.write(tokenlist2.serialize())
     return mismatched_count       
 
-def postprocessing_pipeline(lang_name, pos="XPOS", epochs=20, is_neural=True):
+def rulebased_postprocessing_pipeline(lang_name, pos="XPOS", epochs=20, is_neural=True):
 
     def ensure_list(arg):
         return arg if isinstance(arg, list) else [arg]

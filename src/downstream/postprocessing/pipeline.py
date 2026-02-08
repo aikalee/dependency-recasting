@@ -4,7 +4,7 @@ from src.common.conllu_io import rewrite_conllu
 from src.common.postprocessing.mrg_to_conllu import mrg_to_conllu
 from src.downstream.postprocessing.txt2mrg import txt2mrg
 
-def postprocessing_pipeline(lang_name, pos="XPOS", epochs=20, is_neural=True):
+def neural_postprocessing_pipeline(lang_name, pos="XPOS", epochs=20, is_neural=True):
 
     def ensure_list(arg):
         return arg if isinstance(arg, list) else [arg]
