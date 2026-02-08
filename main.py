@@ -18,7 +18,7 @@ from nltk import Tree
 
 def main():
     
-    neural_postprocessing_pipeline("Ancient_Greek", "UPOS", 100, is_neural=False)
+    neural_postprocessing_pipeline("Ancient_Greek", "UPOS", 100)
     # preprocessing_pipeline("Ancient_Greek", ["train", "dev", "test"], "UPOS", 100, is_target=False)
     # preprocessing_pipeline("Ancient_Greek", ["train", "dev", "test"], "XPOS")
     # postprocessing_pipeline("English", False, "UPOS", ["20", "100"])
