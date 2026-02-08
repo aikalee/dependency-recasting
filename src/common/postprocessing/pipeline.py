@@ -2,9 +2,10 @@ from itertools import product
 from conllu import parse_incr
 from tqdm import tqdm
 
-from pathgen import get_deprojz_file_path, get_const2dep_file_path, get_matched_file_path
+from pathgen import get_deprojz_file_path, get_const2dep_file_path,  get_txt2mrg_file_path, get_matched_file_path
 from src.common.conllu_io import rewrite_conllu
 from src.common.postprocessing.mrg_to_conllu import mrg_to_conllu
+from src.downstream.postprocessing.txt2mrg import txt2mrg
 
 def remove_mismatched_sentences(read_system_path, read_gold_path, write_system_path, write_gold_path):
 
@@ -27,7 +28,7 @@ def remove_mismatched_sentences(read_system_path, read_gold_path, write_system_p
                     goldout.write(tokenlist2.serialize())
     return mismatched_count       
 
-def rulebased_postprocessing_pipeline(lang_name, pos="XPOS", epochs=20, is_neural=True):
+def postprocessing_pipeline(lang_name, pos="XPOS", epochs=20, is_neural=True):
 
     def ensure_list(arg):
         return arg if isinstance(arg, list) else [arg]
@@ -36,6 +37,13 @@ def rulebased_postprocessing_pipeline(lang_name, pos="XPOS", epochs=20, is_neura
         ensure_list,
         (lang_name, pos, epochs, is_neural)
     )
+
+    if is_neural:
+        paras = list(product(lang_name, pos, epochs))
+        
+        for para in paras:
+            read_linearized_path, read_source_path, write_path = get_txt2mrg_file_path(*para)
+            txt2mrg(read_linearized_path, read_source_path, write_path)
             
     # === Tree conversion ===
     paras = list(product(lang_name, pos, epochs, is_neural))
