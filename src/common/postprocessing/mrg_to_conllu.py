@@ -11,13 +11,18 @@ def mrg_to_conllu(lang, read_tree_path, read_conllu_path, write_path):
 
     with open(write_path, "w", encoding="utf-8") as fout:
         pass
-
+   
     with open(read_tree_path, "r", encoding="utf-8") as ftree, \
          open(read_conllu_path, "r", encoding="utf-8") as fconll:
         for tree, tokenlist in tqdm(zip(ftree, parse_incr(fconll)), desc="Converting trees to sentences"):
             tokens, is_illformed = tree2sentence(lang, Tree.fromstring(tree))
-            conllu = TokenList(tokens, metadata=tokenlist.metadata).serialize()
-            
+            # conllu = TokenList(tokens, metadata=tokenlist.metadata).serialize()
+
+            for idx, token in enumerate(tokens):
+                tokenlist[idx]["head"] = token["head"]
+                tokenlist[idx]["deprel"] = token["deprel"] 
+           
+            conllu = tokenlist.serialize()
             sent_id += 1 
             total_count += 1
 

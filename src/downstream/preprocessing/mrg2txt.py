@@ -1,4 +1,4 @@
-from src.postprocessing.linearize import linearize
+from src.downstream.preprocessing.linearize import linearize
 from tqdm import tqdm
 
 def mrg2txt(read_path, write_path):
@@ -11,4 +11,3 @@ def mrg2txt(read_path, write_path):
             with open(write_path, "a", encoding="utf=8") as fout:
                 fout.write(linearzied)
                 fout.write("\n")
-    

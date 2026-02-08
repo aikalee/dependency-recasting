@@ -3,15 +3,24 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 sys.path.append(str(ROOT / "src"))
-from src.common.preprocessing.pipeline import preprocessing_pipeline
-from src.common.postprocessing.rule_based_pipeline import postprocessing_pipeline
-# from src.common.postprocessing.neural_pipeline import postprocessing_pipeline
+from src.common.preprocessing.pipeline import common_preprocessing_pipeline
+from src.common.postprocessing.pipeline import rulebased_postprocessing_pipeline
+from src.downstream.preprocessing.pipeline import neural_preprocessing_pipeline
+from src.downstream.postprocessing.pipeline import neural_postprocessing_pipeline
+
+# === for debugging ===
+from src.common.conllu_io import read_conllu
+from src.common.preprocessing.dep2const import sentence2tree
+from nltk import Tree
 
 
 
 
 def main():
-    postprocessing_pipeline("English", "finetune", "no", "yes", 100, False)
+    
+    neural_postprocessing_pipeline("Ancient_Greek", "UPOS", 100, is_neural=False)
+    # preprocessing_pipeline("Ancient_Greek", ["train", "dev", "test"], "UPOS", 100, is_target=False)
+    # preprocessing_pipeline("Ancient_Greek", ["train", "dev", "test"], "XPOS")
     # postprocessing_pipeline("English", False, "UPOS", ["20", "100"])
     # preprocessing_pipeline("Chinese", ["train", "dev", "test"])
     # postprocessing_pipeline("Polish", "stanza", "finetune", "no", "yes", 100)
@@ -21,10 +30,9 @@ def main():
     # for conllu in read_conllu_file(DATA):
     #     tree = sentence2tree(conllu)
     #     print(tree)
-    # with open(DATA, "r", encoding="utf-8") as fin:
-    #     for line in fin:
-    #         tokenlist, is_illformed = tree2sentence(Tree.fromstring(line))
-    #         print(TokenList(tokenlist).serialize())
+   
+    # for tokenlist, sentencedata in read_conllu(ROOT / "data" / "debug.conllu"):
+    #         _ = sentence2tree(sentencedata, tokenlist)
 
 
 

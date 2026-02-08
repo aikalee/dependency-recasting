@@ -13,6 +13,36 @@ from stanza.models.constituency.trainer import Trainer as ConstTrainer
 
 from tqdm import tqdm
 
+UD_ABBR_LOOKUP = {
+    "Ancient_Greek": "grc",
+    "Chinese": "zh",
+    "Czech": "cs",
+    "Dutch": "nl",
+    "English": "en",   
+    "Polish": "pl",
+    "Russian": "ru"
+    }
+
+PTB_ABBR_LOOKUP = {
+    "Ancient_Greek": "grc",
+    "Chinese": "zh-hans",
+    "Czech": "cs",
+    "Dutch": "nl",
+    "English": "en",   
+    "Polish": "pl",
+    "Russian": "ru"
+    }
+    
+TREEBANK_LOOKUP = {
+    "Ancient_Greek": "Perseus",
+    "Chinese": "Penn",
+    "Czech": "PDT",
+    "Dutch": "Alpino",
+    "English": "Penn",
+    "Polish": "LFG",
+    "Russian": "SynTagRus"
+    }
+
 def write_to_file(predicted_trees, output_path):
     
         # === Create/clear output file ===
@@ -148,44 +178,15 @@ def no_retag_pipeline(input_path, output_path, const_model_file, pos):
     predicted_trees = parse_sentences(const_model, tagged_sentences)
     write_to_file(predicted_trees, output_path)
 
-def main():
-    UD_ABBR_LOOKUP = {
-        "Ancient_Greek": "grc",
-        "Chinese": "zh",
-        "Czech": "cs",
-        "Dutch": "nl",
-        "English": "en",   
-        "Polish": "pl",
-        "Russian": "ru"
-        }
-    
-    PTB_ABBR_LOOKUP = {
-        "Ancient_Greek": "grc",
-        "Chinese": "zh-hans",
-        "Czech": "cs",
-        "Dutch": "nl",
-        "English": "en",   
-        "Polish": "pl",
-        "Russian": "ru"
-        }
-    
-    TREEBANK_LOOKUP = {
-        "Ancient_Greek": "Perseus",
-        "Chinese": "Penn",
-        "Czech": "PDT",
-        "Dutch": "Alpino",
-        "English": "Penn",
-        "Polish": "LFG",
-        "Russian": "SynTagRus"
-        }
-    
-    LANG = "English"
-    POS = "xpos"
+def main():    
+    LANG = "Ancient_Greek"
+    POS = "upos"
     EPOCHS = 100
+    SPLIT = "test"
     UD_ABBR = UD_ABBR_LOOKUP[LANG]
     PTB_ABBR = PTB_ABBR_LOOKUP[LANG]
     TREEBANK = TREEBANK_LOOKUP[LANG]
-    INPUT_FILE = f"/root/autodl-tmp/recasting/data/{UD_ABBR}_{TREEBANK.lower()}-ud-test.conllu"
+    INPUT_FILE = f"/root/autodl-tmp/recasting/data/upstream_inference/UD_{LANG}-{TREEBANK}/{UD_ABBR}_{TREEBANK.lower()}-ud-{SPLIT}.conllu"
    
  
     POS_MODEL = f"/root/autodl-tmp/stanza_resources/{PTB_ABBR}/pos/combined_charlm.pt"
@@ -195,8 +196,9 @@ def main():
    
     # for EP in ["100"]:
     MODELNAME = f"lang={PTB_ABBR},pos={POS},epochs={EPOCHS}"
+    FILENAME = f"lang={PTB_ABBR},split={SPLIT},pos={POS},epochs={EPOCHS}"
     CONST_MODEL = f"/root/autodl-tmp/recasting/stanza-models/{MODELNAME}/{PTB_ABBR}_transformer_finetuned_constituency_checkpoint.pt"
-    OUTPUT_FILE = f"/root/autodl-tmp/recasting/predictions/stanza/{MODELNAME}.mrg"
+    OUTPUT_FILE = f"/root/autodl-tmp/recasting/predictions/stanza/{FILENAME}.mrg"
     no_retag_pipeline(INPUT_FILE, OUTPUT_FILE, CONST_MODEL, POS)
 
 if __name__ == "__main__":
