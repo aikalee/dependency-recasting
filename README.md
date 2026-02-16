@@ -9,3 +9,14 @@ $\mathcal{D} \mapsto \mathcal{L}$ and $\mathcal{D}^\prime \mapsto \mathcal{L}^\p
 
 For evaluation, the outputs are deprojectivized back to the original non-projective UD structures, and scores are reported in the original UD space.
 
+## Repository Structure
+```
+main.py
+src/
+  pathgen.py
+  common/
+  preprocessing/
+  postprocessing/
+
+```
+
