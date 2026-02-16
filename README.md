@@ -27,20 +27,20 @@ postprocessing_pipeline("English", pos="upos", epochs=100, is_neural=True)
 ```
 4. Upstream model training
 ```
-# train_stanza,ver=autodl.sh
+# benchmarks/train/train_stanza,ver=autodl.sh
 ```
 5. Upstream model inference
 ```
-# run_stanza,ver=autodl.py
+# benchmarks/eval/run_stanza,ver=autodl.py
 ```
 5. Downstream mdoel training
 ```
-# train_t5.py
+# benchmarks/train/train_t5.py
 mode = "train"
 ```
 6. Downstream model inference
 ```
-# train_t5.py
+# benchmarks/train/train_t5.py
 mode = "predict"
 ```
 **P.S. I will add argparse later. Sorry for the inconvinence.**
