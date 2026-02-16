@@ -1,3 +1,4 @@
+## Pipeline Workflow
 1. Start from the original UD trees.
 2. Apply pseudo-projective lifting to obtain a projectivized UD representation.
 3. Convert the lifted UD trees into the dependency-tree representation $\mathcal{D}$.
