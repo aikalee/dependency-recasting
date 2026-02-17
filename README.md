@@ -13,12 +13,12 @@ For evaluation, the outputs are deprojectivized back to the original non-project
 1. Data preprocessing for upstream model training (projectivization and conllu-to-tree conversion)
 ```
 # main.py
-common_preprocessing_pipeline("English", ["train", "dev', "test"], pos="upos")
+common_preprocessing_pipeline("English", ["train", "dev', "test"], pos="UPOS")
 ```
 2. Data preprocessing for downstream model training (linearization)
 ```
 # main.py
-neural_preprocessing_pipeline("English", ["train", "dev", "test"], is_target=True)
+neural_preprocessing_pipeline("English", ["train", "dev", "test"], pos="UPOS", epochs=100, is_target=True)
 ```
 3. Data postprocessing (delinearization and replacement with source data [enabled with the option `is_neural=True`], tree-to-conllu conversion, deprojectivization)
 ```
