@@ -8,32 +8,59 @@ PREDICTION_DIR = BASE_DIR / "predictions"
 UD_ABBR_LOOKUP = {
     "Ancient_Greek": "grc",
     "Chinese": "zh",
-    "Czech": "cs",
-    "Dutch": "nl",
-    "English": "en",   
-    "Polish": "pl",
-    "Russian": "ru"
+    "English-Penn": "en",
+    "English-EWT": "en",
+    "Finnish": "fi",
+    "French": "fr",
+    "Hebrew": "he",
+    "Russian": "ru",
+    "Tamil": "ta",
+    "Uyghur": "ug",
+    "Wolof": "wo"
     }
 
 # language code reference: https://github.com/stanfordnlp/stanza/blob/dev/stanza/models/common/constant.py
 STNZ_ABBR_LOOKUP = {
     "Ancient_Greek": "grc",
     "Chinese": "zh-hans",
-    "Czech": "cs",
-    "Dutch": "nl",
-    "English": "en",
-    "Polish": "pl",
-    "Russian": "ru"
+    "English-Penn": "en",
+    "English-EWT": "en",
+    "Finnish": "fi",
+    "French": "fr",
+    "Hebrew": "he",
+    "Russian": "ru",
+    "Tamil": "ta",
+    "Uyghur": "ug",
+    "Wolof": "wo"
     }
+
+DIR_ABBR_LOOKUP = {
+    "Ancient_Greek": "grc",
+    "Chinese": "zh-hans",
+    "English-Penn": "en-penn",
+    "English-EWT": "en-ewt",
+    "Finnish": "fi",
+    "French": "fr",
+    "Hebrew": "he",
+    "Russian": "ru",
+    "Tamil": "ta",
+    "Uyghur": "ug",
+    "Wolof": "wo"
+    }
+
 
 TREEBANK_LOOKUP = {
     "Ancient_Greek": "Perseus",
     "Chinese": "Penn",
-    "Czech": "PDT",
-    "Dutch": "Alpino",
-    "English": "Penn",
-    "Polish": "LFG",
-    "Russian": "SynTagRus"
+    "English-Penn": "Penn",
+    "English-EWT": "EWT",
+    "Finnish": "TDT",
+    "French": "GSD",
+    "Hebrew": "HTB",
+    "Russian": "GSD",
+    "Tamil": "TTB",
+    "Uyghur": "UDT",
+    "Wolof": "WTB"
     }
      
 
@@ -48,6 +75,8 @@ def get_projz_file_path(lang, split, is_common=True):
     ud_abbr = UD_ABBR_LOOKUP[lang]
     treebank = TREEBANK_LOOKUP[lang]
     task = "common" if is_common else "downstream"
+    if lang in ["English-Penn" or "English_EWT"]:
+        lang = lang.split("-")[0]
    
     read_path = DATA_DIR / "raw" /f"UD_{lang}-{treebank}" / f"{ud_abbr}_{treebank.lower()}-ud-{split}.conllu"
     output_dir = DATA_DIR / task / "projectivized" / f"UD_{lang}-{treebank}"
@@ -75,14 +104,17 @@ def get_dep2const_file_path(lang="Chinese", split="train", pos="XPOS", is_common
     if split not in ["train", "test", "dev"]:
         raise ValueError("The variable split must match one of the followings: train, test, dev")
     
-
     ud_abbr = UD_ABBR_LOOKUP[lang]
     stnz_abbr = STNZ_ABBR_LOOKUP[lang]
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
     treebank = TREEBANK_LOOKUP[lang]
     task = "common" if is_common else "downstream"
+    if lang in ["English-Penn" or "English_EWT"]:
+        lang = lang.split("-")[0]
+
    
     read_path = DATA_DIR / task / "projectivized" / f"UD_{lang}-{treebank}/{ud_abbr}__{split}.conllu"
-    output_dir = DATA_DIR / task / "constituentized" / f"lang={stnz_abbr},pos={pos.lower()}"     
+    output_dir = DATA_DIR / task / "constituentized" / f"lang={dir_abbr},pos={pos.lower()}"     
       
     if not read_path.exists():
         raise FileNotFoundError(f"The file '{read_path}' does not exist.")
@@ -104,19 +136,22 @@ def get_const2dep_file_path(lang, pos="XPOS", epochs=20, is_neural=True):
     """
     
     ud_abbr = UD_ABBR_LOOKUP[lang]
-    stnz_abbr = STNZ_ABBR_LOOKUP[lang]
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
     treebank = TREEBANK_LOOKUP[lang]
+    if lang in ["English-Penn" or "English_EWT"]:
+        lang = lang.split("-")[0]
 
-    read_write_dir = PREDICTION_DIR / "stanza" 
+
+    read_write_dir = PREDICTION_DIR  
     epoch_info = f",epochs={epochs}"
     postprocess = "neural" if is_neural else "rule_based"
 
     if is_neural:
-        read_tree_path = read_write_dir / "neural" / f"lang={stnz_abbr},pos={pos.lower()}{epoch_info}.mrg"
+        read_tree_path = read_write_dir / "neural" / f"lang={dir_abbr},pos={pos.lower()}{epoch_info}.mrg"
     else:
-        read_tree_path = read_write_dir / "raw" / f"lang={stnz_abbr},split=test,pos={pos.lower()}{epoch_info}.mrg"
+        read_tree_path = read_write_dir / "raw" / f"lang={dir_abbr},split=test,pos={pos.lower()}{epoch_info}.mrg"
     read_orig_path = DATA_DIR / "raw" / f"UD_{lang}-{treebank}" / f"{ud_abbr}_{treebank.lower()}-ud-test.conllu"
-    write_path = read_write_dir / postprocess / f"lang={stnz_abbr},pos={pos.lower()}{epoch_info}.conllu"
+    write_path = read_write_dir / postprocess / f"lang={dir_abbr},pos={pos.lower()}{epoch_info}.conllu"
             
     if not read_tree_path.exists():
         raise FileNotFoundError(f"The file '{read_tree_path}' does not exist.")
@@ -136,15 +171,17 @@ def get_deprojz_file_path(lang, pos="XPOS", epochs=20, is_neural=True):
     """
     file name: lang_method_split_(pseudo)
     """
-    
-    stnz_abbr = STNZ_ABBR_LOOKUP[lang]
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
+    if lang in ["English-Penn" or "English_EWT"]:
+        lang = lang.split("-")[0]
+
     epoch_info = f",epochs={epochs}"
     postprocess = "neural" if is_neural else "rule_based"
 
-    read_write_dir = PREDICTION_DIR / "stanza" / postprocess
+    read_write_dir = PREDICTION_DIR / postprocess
    
-    read_path = read_write_dir / f"lang={stnz_abbr},pos={pos.lower()}{epoch_info}.conllu"
-    write_path = read_write_dir / f"lang={stnz_abbr},pos={pos.lower()}{epoch_info},deprojz=yes.conllu"
+    read_path = read_write_dir / f"lang={dir_abbr},pos={pos.lower()}{epoch_info}.conllu"
+    write_path = read_write_dir / f"lang={dir_abbr},pos={pos.lower()}{epoch_info},deprojz=yes.conllu"
   
     
     if not read_path.exists():
@@ -162,17 +199,20 @@ def get_matched_file_path(lang, epochs=20):
     """
     
     ud_abbr = UD_ABBR_LOOKUP[lang]
-    stnz_abbr = STNZ_ABBR_LOOKUP[lang]
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
     treebank = TREEBANK_LOOKUP[lang]
+    if lang in ["English-Penn" or "English_EWT"]:
+        lang = lang.split("-")[0]
+
 
    
-    read_write_dir = PREDICTION_DIR / "stanza" 
+    read_write_dir = PREDICTION_DIR
     epoch_info = f",epochs={epochs}"
 
-    read_system_path = read_write_dir / f"lang={stnz_abbr}{epoch_info},deprojz=yes.conllu"
+    read_system_path = read_write_dir / f"lang={dir_abbr}{epoch_info},deprojz=yes.conllu"
     read_gold_path = DATA_DIR / "raw" / f"UD_{lang}-{treebank}/{ud_abbr}_{treebank.lower()}-ud-test.conllu"
-    write_system_path = read_write_dir / f"lang={stnz_abbr}{epoch_info},deprojz=yes,matched=yes.conllu"
-    write_gold_path = DATA_DIR / "common" / "gold" / f"UD_{lang}-{treebank}/lang={stnz_abbr}{epoch_info},matched=yes.conllu"
+    write_system_path = read_write_dir / f"lang={dir_abbr}{epoch_info},deprojz=yes,matched=yes.conllu"
+    write_gold_path = DATA_DIR / "common" / "gold" / f"UD_{lang}-{treebank}/lang={dir_abbr}{epoch_info},matched=yes.conllu"
             
     for read_path in [read_system_path, read_gold_path]:
         if not read_path.exists():
@@ -194,18 +234,23 @@ def get_matched_file_path(lang, epochs=20):
 def get_mrg2txt_file_path(lang, split="train", pos="XPOS", epochs=20, is_target=False):
 
     stnz_abbr = STNZ_ABBR_LOOKUP[lang]
-    output_dir = DATA_DIR / "downstream" / "linearized" / f"lang={stnz_abbr},pos={pos.lower()}"
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
+    if lang in ["English-Penn" or "English_EWT"]:
+        lang = lang.split("-")[0]
+
+    output_dir = DATA_DIR / "downstream" / "linearized" / f"lang={dir_abbr},pos={pos.lower()}"
 
     if is_target:
-        read_path = DATA_DIR / "common" / "constituentized" / f"lang={stnz_abbr},pos={pos.lower()}" / f"{stnz_abbr}__{split}.mrg"
-        
+        read_path = DATA_DIR / "common" / "constituentized" / f"lang={dir_abbr},pos={pos.lower()}" / f"{stnz_abbr}__{split}.mrg"
     else:
-        read_path = DATA_DIR / "downstream" / "upstream_outputs" / f"lang={stnz_abbr},pos={pos.lower()}" / f"lang={stnz_abbr},split={split},pos={pos.lower()},epochs={epochs}.mrg"
+        read_path = DATA_DIR / "downstream" / "upstream_outputs" / f"lang={dir_abbr},pos={pos.lower()}" / f"lang={stnz_abbr},split={split},pos={pos.lower()},epochs={epochs}.mrg"
 
     if not read_path.exists():
         raise FileNotFoundError(f"The file '{read_path}' does not exist.")
     
-    write_path = output_dir / f"{split}.{"tgt" if is_target else "src"}.txt"
+    tgt_or_src = "tgt" if is_target else "src"
+    
+    write_path = output_dir / f"{split}.{tgt_or_src}.txt"
     
     if not output_dir.exists():
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -219,16 +264,21 @@ def get_mrg2txt_file_path(lang, split="train", pos="XPOS", epochs=20, is_target=
 def get_txt2mrg_file_path(lang, pos="XPOS", epochs=20):
     ud_abbr = UD_ABBR_LOOKUP[lang]
     stnz_abbr = STNZ_ABBR_LOOKUP[lang]
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
     treebank = TREEBANK_LOOKUP[lang]
+    if lang in ["English-Penn" or "English_EWT"]:
+        lang = lang.split("-")[0]
 
-    read_write_dir = PREDICTION_DIR / "stanza" / "neural"
-    read_linearized_path = read_write_dir / f"lang={stnz_abbr},pos={pos.lower()},epochs={epochs}.txt"
-    read_source_path = PREDICTION_DIR / "stanza" / "raw" /  f"lang={stnz_abbr},split=test,pos={pos.lower()},epochs=100.mrg"
-    write_path = read_write_dir / f"lang={stnz_abbr},pos={pos.lower()},epochs={epochs}.mrg"
+
+    read_write_dir = PREDICTION_DIR / "neural"
+    read_linearized_path = read_write_dir / f"lang={dir_abbr},pos={pos.lower()},epochs={epochs}.txt"
+    read_source_path = PREDICTION_DIR / "raw" /  f"lang={dir_abbr},split=test,pos={pos.lower()},epochs=100.mrg"
+    read_orig_path = DATA_DIR / "raw" / f"UD_{lang}-{treebank}" / f"{ud_abbr}_{treebank.lower()}-ud-test.conllu"
+    write_path = read_write_dir / f"lang={dir_abbr},pos={pos.lower()},epochs={epochs}.mrg"
 
     print(f"Loading from {read_linearized_path} and {read_source_path}...")
     print(f"Writing into {write_path}...")
 
-    return read_linearized_path, read_source_path, write_path
+    return read_linearized_path, read_source_path, read_orig_path, write_path
 
     

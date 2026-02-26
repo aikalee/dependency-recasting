@@ -19,8 +19,8 @@ def postprocessing_pipeline(lang_name, pos="XPOS", epochs=20, is_neural=True):
         paras = list(product(lang_name, pos, epochs))
         
         for para in paras:
-            read_linearized_path, read_source_path, write_path = get_txt2mrg_file_path(*para)
-            txt2mrg(read_linearized_path, read_source_path, write_path)
+            read_linearized_path, read_source_path, read_orig_path, write_path = get_txt2mrg_file_path(*para)
+            txt2mrg(read_linearized_path, read_source_path, read_orig_path, write_path)
     
     # === Tree conversion ===
     paras = list(product(lang_name, pos, epochs, is_neural))

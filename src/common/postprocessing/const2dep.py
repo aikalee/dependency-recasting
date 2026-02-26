@@ -27,7 +27,6 @@ def add_ids_to_tree(tree):
             return Tree(t.label(), [_add_ids(child) for child in t])
         else:
             return t  # already tagged or invalid
-
     return _add_ids(tree)
 
 def check_illformed(subtree):
@@ -213,7 +212,7 @@ def tree2sentence(lang, tree, pos_type="UPOS"):
                 #     "misc": None
                 # }
                 # tokens.insert(int(child[0]), token)
-                token = {"head": head_id, "deprel": deprel}
+                token = {"id": int(child[0]), "form": child[1], "head": head_id, "deprel": deprel}
                 tokens.insert(int(child[0]), token)
                 logger.debug(f"Current sentence state: {tokens}")    
             elif len(child) == 1 and isinstance(child[0], tuple): 

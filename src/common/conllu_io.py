@@ -79,11 +79,11 @@ def read_conllu(file_path):
                     deprels[(token["id"], token["head"])] = token["deprel"]
                     tokens.append(token)
 
-            no_mwt_tokenlist = TokenList(tokens, metadata=tokenlist.metadata)
+            # no_mwt_tokenlist = TokenList(tokens, metadata=tokenlist.metadata)
             sentencedata = init_sentencedata(deprels)
             
                 
-            yield no_mwt_tokenlist, sentencedata
+            yield tokenlist, sentencedata
 
 def read_conllu_sentence(sent):
     deprels = {}
@@ -104,13 +104,21 @@ def reconstruct_conllu(tokenlist, transformed_deprels):
     if transformed_deprels:
         tokenlist = tokenlist.copy()
 
-        for k, v in transformed_deprels.keys():
+        # for k, v in transformed_deprels.keys():
 
-            if tokenlist[int(k)-1]["id"] == k:
-                tokenlist[int(k)-1]["head"] = v
-                tokenlist[int(k)-1]["deprel"] = transformed_deprels[(k, v)]  
-            else:
-                raise ValueError("ID should be the same with k.")
+        #     if tokenlist[int(k)-1]["id"] == k:
+        #         tokenlist[int(k)-1]["head"] = v
+        #         tokenlist[int(k)-1]["deprel"] = transformed_deprels[(k, v)]  
+        #     else:
+        #         raise ValueError("ID should be the same with k.")
+
+        for idx, token in enumerate(tokenlist):
+            for k, v in transformed_deprels.keys():
+                if token["id"] == k:
+                    tokenlist[idx]["head"] = v
+                    tokenlist[idx]["deprel"] = transformed_deprels[(k, v)]
+                # else:
+                #     raise ValueError("ID should be the same with k.")
     
     return tokenlist
 
@@ -140,7 +148,6 @@ def rewrite_conllu(read_path, write_path, projz_mode=True, pseudo_filter=False) 
         
         else:
             if is_projz(deprels):
-           
                 deprojz_deprels = deprojectivize_by_path(sentencedata)
                 tokenlist = reconstruct_conllu(tokenlist, deprojz_deprels)
        

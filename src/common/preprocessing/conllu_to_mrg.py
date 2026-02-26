@@ -1,3 +1,4 @@
+from conllu.models import TokenList
 from src.common.conllu_io import read_conllu
 from src.common.preprocessing.dep2const import sentence2tree
 from itertools import product
@@ -9,7 +10,9 @@ def conllu_to_mrg(read_path, write_path, pos):
         pass
 
     for tokenlist, sentencedata in tqdm(read_conllu(read_path), desc="Converting sentences to trees"):
-        ptb = sentence2tree(sentencedata, tokenlist, pos)
+        tokens = [t for t in tokenlist if isinstance(t["id"], int)]
+        no_mwt_tokenlist = TokenList(tokens, metadata=tokenlist.metadata)
+        ptb = sentence2tree(sentencedata, no_mwt_tokenlist, pos)
         with open(write_path, "a", encoding="utf-8") as f:
             f.write(ptb.pformat(margin=float('inf')) + "\n")
 
