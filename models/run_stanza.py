@@ -114,7 +114,7 @@ def retag_pipeline(input_path, output_path, pos_model_file, pretrain_file, forwa
 def no_retag_pipeline(input_path, output_path, const_model_file, pos):
     """
     Input file: CoNLL-U file
-    Output file: Predicted CoNLL-U file
+    Output file: Predicted PTB file
     """
     def get_gold_pos(input_path, pos):
         tagged_sentences = []
@@ -122,7 +122,8 @@ def no_retag_pipeline(input_path, output_path, const_model_file, pos):
             for tokenlist in parse_incr(fin):
                 sentence = []
                 for token in tokenlist:
-                    sentence.append((token["form"], token[pos]))
+                    if isinstance(token["id"], int):                  # added Feb 24
+                        sentence.append((token["form"].replace(" ", ""), token[pos]))
                 tagged_sentences.append(sentence)
         return tagged_sentences
     

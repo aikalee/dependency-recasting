@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PROJECT_ROOT=$(dirname "$(dirname "$(dirname "$(realpath "$0")")")")
+PROJECT_ROOT=$(dirname "$(dirname "$(realpath "$0")")")
 
 # === Add project root to PATH (similar to Python sys.path.insert) ===
 export PATH="$PROJECT_ROOT:$PATH"
@@ -12,25 +12,31 @@ echo "Now running in: $(pwd)"
 # EPOCH=("20" "100")
 
 MODE="rule_based"
-LANG="Ancient_Greek"
+LANG="Finnish"
+abbr="fi"
+treebank="TDT"
+treebank_lower="tdt"
 
-declare -A ud_abbr
-ud_abbr["Chinese"]="zh"
-ud_abbr["English"]="en"
-ud_abbr["Polish"]="pl"
-ud_abbr["Ancient_Greek"]="grc"
+# declare -A ud_abbr
+# ud_abbr["Chinese"]="zh"
+# ud_abbr["English"]="en"
+# ud_abbr["Finnish"]="fi"
+# ud_abbr["Polish"]="pl"
+# ud_abbr["Ancient_Greek"]="grc"
 
-declare -A stnz_abbr
-stnz_abbr["Chinese"]="zh-hans"
-stnz_abbr["English"]="en"
-stnz_abbr["Polish"]="pl"
-stnz_abbr["Ancient_Greek"]="grc"
+# declare -A stnz_abbr
+# stnz_abbr["Chinese"]="zh-hans"
+# stnz_abbr["English"]="en"
+# stnz_abbr["Finnish"]="fi"
+# stnz_abbr["Polish"]="pl"
+# stnz_abbr["Ancient_Greek"]="grc"
 
-declare -A treebank
-treebank["Chinese"]="Penn"
-treebank["English"]="Penn"
-treebank["Polish"]="LFG"
-treebank["Ancient_Greek"]="Perseus"
+# declare -A treebank
+# treebank["Chinese"]="Penn"
+# treebank["English"]="Penn"
+# treebank["Finnish"]="TDT"
+# treebank["Polish"]="LFG"
+# treebank["Ancient_Greek"]="Perseus"
 
 OUTPUT_DIR="results/stanza/${MODE}"
 mkdir -p "$OUTPUT_DIR"
@@ -38,17 +44,18 @@ mkdir -p "$OUTPUT_DIR"
 # for EP in "${EPOCH[@]}"; do
     
 # lowercase the treebank name (Penn → penn)
-TBLOWER="${treebank[$LANG],,}"
+# TBLOWER="${treebank,,}"
 
-MODELNAME="lang=${stnz_abbr[$LANG]},pos=upos,epochs=100"
+MODELNAME="lang=${abbr},pos=upos,epochs=100"
 
-SYSFILE="predictions/stanza/${MODE}/${MODELNAME},deprojz=yes.conllu"
-GOLDFILE="data/raw/UD_${LANG}-${treebank[$LANG]}/${ud_abbr[$LANG]}_${TBLOWER}-ud-test.conllu"
+SYSFILE="predictions/${MODE}/${MODELNAME},deprojz=yes.conllu"
+GOLDFILE="data/raw/UD_${LANG}-${treebank}/${abbr}_${treebank_lower}-ud-test.conllu"
 
 OUTPUT="$OUTPUT_DIR/validation,${MODELNAME}.txt"
 
 echo "Validating $SYSFILE against $GOLDFILE..."
-python benchmarks/eval/eval.py --verbose "$SYSFILE" "$GOLDFILE" > "$OUTPUT"
+python models/eval.py --verbose "$SYSFILE" "$GOLDFILE" 2>&1 | tee "$OUTPUT"
+# python models/eval.py --verbose "$SYSFILE" "$GOLDFILE" > "$OUTPUT"
 
 # done
 

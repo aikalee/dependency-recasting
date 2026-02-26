@@ -56,7 +56,6 @@ def validate_linearized_brackets(line: str) -> Tuple[bool, str]:
                 return False, f"Extra closing {tok} at token {i}"
             top = stack[-1]
             if lab != top:
-                # this is the key diagnosis you want
                 return False, f"Mismatch at token {i}: got {tok} but expected ){top}"
             stack.pop()
 
