@@ -75,9 +75,9 @@ def get_projz_file_path(lang, split, is_common=True):
     ud_abbr = UD_ABBR_LOOKUP[lang]
     treebank = TREEBANK_LOOKUP[lang]
     task = "common" if is_common else "downstream"
-    if lang in ["English-Penn" or "English_EWT"]:
+    if lang in ["English-Penn", "English-EWT"]:
         lang = lang.split("-")[0]
-   
+
     read_path = DATA_DIR / "raw" /f"UD_{lang}-{treebank}" / f"{ud_abbr}_{treebank.lower()}-ud-{split}.conllu"
     output_dir = DATA_DIR / task / "projectivized" / f"UD_{lang}-{treebank}"
     write_path = output_dir / f"{ud_abbr}__{split}.conllu"
@@ -109,7 +109,7 @@ def get_dep2const_file_path(lang="Chinese", split="train", pos="XPOS", is_common
     dir_abbr = DIR_ABBR_LOOKUP[lang]
     treebank = TREEBANK_LOOKUP[lang]
     task = "common" if is_common else "downstream"
-    if lang in ["English-Penn" or "English_EWT"]:
+    if lang in ["English-Penn", "English-EWT"]:
         lang = lang.split("-")[0]
 
    
@@ -138,7 +138,7 @@ def get_const2dep_file_path(lang, pos="XPOS", epochs=20, is_neural=True):
     ud_abbr = UD_ABBR_LOOKUP[lang]
     dir_abbr = DIR_ABBR_LOOKUP[lang]
     treebank = TREEBANK_LOOKUP[lang]
-    if lang in ["English-Penn" or "English_EWT"]:
+    if lang in ["English-Penn", "English-EWT"]:
         lang = lang.split("-")[0]
 
 
@@ -172,7 +172,7 @@ def get_deprojz_file_path(lang, pos="XPOS", epochs=20, is_neural=True):
     file name: lang_method_split_(pseudo)
     """
     dir_abbr = DIR_ABBR_LOOKUP[lang]
-    if lang in ["English-Penn" or "English_EWT"]:
+    if lang in ["English-Penn", "English-EWT"]:
         lang = lang.split("-")[0]
 
     epoch_info = f",epochs={epochs}"
@@ -201,7 +201,7 @@ def get_matched_file_path(lang, epochs=20):
     ud_abbr = UD_ABBR_LOOKUP[lang]
     dir_abbr = DIR_ABBR_LOOKUP[lang]
     treebank = TREEBANK_LOOKUP[lang]
-    if lang in ["English-Penn" or "English_EWT"]:
+    if lang in ["English-Penn", "English-EWT"]:
         lang = lang.split("-")[0]
 
 
@@ -235,7 +235,7 @@ def get_mrg2txt_file_path(lang, split="train", pos="XPOS", epochs=20, is_target=
 
     stnz_abbr = STNZ_ABBR_LOOKUP[lang]
     dir_abbr = DIR_ABBR_LOOKUP[lang]
-    if lang in ["English-Penn" or "English_EWT"]:
+    if lang in ["English-Penn", "English-EWT"]:
         lang = lang.split("-")[0]
 
     output_dir = DATA_DIR / "downstream" / "linearized" / f"lang={dir_abbr},pos={pos.lower()}"
@@ -266,7 +266,7 @@ def get_txt2mrg_file_path(lang, pos="XPOS", epochs=20):
     stnz_abbr = STNZ_ABBR_LOOKUP[lang]
     dir_abbr = DIR_ABBR_LOOKUP[lang]
     treebank = TREEBANK_LOOKUP[lang]
-    if lang in ["English-Penn" or "English_EWT"]:
+    if lang in ["English-Penn", "English-EWT"]:
         lang = lang.split("-")[0]
 
 

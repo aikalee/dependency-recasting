@@ -71,7 +71,7 @@ def predict_dataset(tokenizer, model, test_dataset, output_file):
     with open(output_file, "w", encoding="utf-8") as f, torch.no_grad():
         for batch in tqdm(test_loader):
             batch = {k: v.to(DEVICE) for k, v in batch.items() if k != "labels"}
-            gen_ids = model.generate(**batch, max_new_tokens=128, num_beams=4)
+            gen_ids = model.generate(**batch, max_new_tokens=256, num_beams=4, early_stopping=False)
             preds = tokenizer.batch_decode(gen_ids, skip_special_tokens=True)
             for line in preds:
                 f.write(line + "\n")
