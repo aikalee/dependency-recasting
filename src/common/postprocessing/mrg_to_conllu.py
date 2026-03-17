@@ -23,10 +23,16 @@ def mrg_to_conllu(lang, read_tree_path, read_conllu_path, write_path):
             #     tokenlist[idx]["deprel"] = token["deprel"] 
             
             for idx, orig in enumerate(tokenlist):
+                tokenlist[idx]["head"] = "_"               
+                tokenlist[idx]["deprel"] = "_"
+
                 for upd in tokens:
                     if orig["id"] == upd["id"]:
                         tokenlist[idx]["head"] = upd["head"]
                         tokenlist[idx]["deprel"] = upd["deprel"]
+                        break
+               
+                    
 
             conllu = tokenlist.serialize()
             sent_id += 1 

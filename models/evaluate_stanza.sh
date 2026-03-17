@@ -11,11 +11,11 @@ echo "Now running in: $(pwd)"
 
 # EPOCH=("20" "100")
 
-MODE="rule_based"
-LANG="Finnish"
-abbr="fi"
-treebank="TDT"
-treebank_lower="tdt"
+MODE="neural"
+LANG="Tamil"
+abbr="ta"
+treebank="TTB"
+treebank_lower="ttb"
 
 # declare -A ud_abbr
 # ud_abbr["Chinese"]="zh"

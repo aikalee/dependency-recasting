@@ -117,9 +117,6 @@ def reconstruct_conllu(tokenlist, transformed_deprels):
                 if token["id"] == k:
                     tokenlist[idx]["head"] = v
                     tokenlist[idx]["deprel"] = transformed_deprels[(k, v)]
-                # else:
-                #     raise ValueError("ID should be the same with k.")
-    
     return tokenlist
 
 
@@ -159,6 +156,18 @@ def rewrite_conllu(read_path, write_path, projz_mode=True, pseudo_filter=False) 
                 # print("Write sucessful:", tokenlist.metadata["sent_id"])
         except Exception as e:
             print("‼️ Write failed:", e)
+
+def count_non_projectivity(read_path):
+    all_non_proj_arcs = 0
+    all_arcs = 0
+
+    sents = read_conllu(read_path)
+    for _, sentencedata in sents:
+        arcs = sentencedata.arcs
+        all_non_proj_arcs += len(get_non_proj_arcs(arcs))
+        all_arcs += len(arcs)
+    
+    return all_non_proj_arcs / all_arcs * 100
     
 def main():
     # ======================== Sample usage ====================================

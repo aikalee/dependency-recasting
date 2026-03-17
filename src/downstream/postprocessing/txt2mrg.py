@@ -18,7 +18,7 @@ def txt2mrg(read_linearized_path, read_source_path, read_orig_path, write_path):
          open(read_source_path, "r", encoding="utf-8") as fsrc, \
          open(read_orig_path, "r", encoding="utf-8") as forig:
         for linearized, src, orig in tqdm(zip(flin, fsrc, parse_incr(forig)), desc="Delinearizing"):
-            equal_words = count_linearized(linearized) == len(orig)
+            equal_words = count_linearized(linearized) == count_source(src)
             is_validate, msg = validate_linearized_brackets(linearized)
             if is_validate and equal_words:
                 delinearized = linearized_to_ptb(linearized) 
