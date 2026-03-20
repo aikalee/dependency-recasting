@@ -30,15 +30,15 @@ def main():
         "Uyghur": "ug",
         "Wolof": "wo"
     """
-    # common_preprocessing_pipeline(["English-EWT"], ["train", "dev", "test"], "UPOS")
-    # downstream_preprocessing_pipeline("Tamil", ["train", "dev", "test"], "UPOS", 100, is_target=True)
-    postprocessing_pipeline("Tamil", "UPOS", 100, is_neural=True)
+    common_preprocessing_pipeline(["English-Penn"], ["train", "dev", "test"], "UPOS")
+    # downstream_preprocessing_pipeline("Uyghur", ["train", "dev", "test"], "UPOS", 100, is_target=False)
+    # postprocessing_pipeline("Uyghur", "UPOS", 100, is_neural=True)
     # preprocessing_pipeline("Ancient_Greek", ["train", "dev", "test"], "UPOS", 100, is_target=False)
     # preprocessing_pipeline("Ancient_Greek", ["train", "dev", "test"], "XPOS")
     # postprocessing_pipeline("English", False, "UPOS", ["20", "100"])
     # preprocessing_pipeline("Chinese", ["train", "dev", "test"])
     # postprocessing_pipeline("Polish", "stanza", "finetune", "no", "yes", 100)
-    # DATA = ROOT / "debug.txt"
+    # DATA = ROOT / "debug.conllu"
     # for tokenlist, sentencedata in read_conllu(DATA):
     #     print(tokenlist)
     #     tree = sentence2tree(sentencedata, tokenlist)
@@ -47,9 +47,10 @@ def main():
     # mrg_to_conllu("Finnish", ROOT / "debug.output.mrg", ROOT / "debug.conllu", ROOT / "debug.output.conllu")
     # rewrite_conllu(ROOT / "debug.output.conllu", ROOT / "debug.output.deprojz.conllu", False)
     # print(Tree.fromstring('(TOP (root (obj (NOUN Palon)) (VERB kerrotaan) (ccomp↓ (VERB saaneen) (obj (NOUN alkunsa)) (obl (acl (obl (nmod_poss (NOUN matkakeskuksen)) (NOUN pysäköintikerroksessa)) (VERB olleista)) (NOUN styroksilevyistä)) (conj (cc (CCONJ ja)) (VERB tuhonneen) (obj (amod (nmod_poss (nummod (advmod (ADV noin)) (NUM 5 000)) (NOUN neliömetrin)) (ADJ kokoisen)) (NOUN alueen)))) (punct (PUNCT .))))'))
-    
+
     # for tokenlist, sentencedata in read_conllu(DATA):
-    #     deprojz = deprojectivize_by_path(sentencedata)
+    #     print(tokenlist)
+    #     deprojz = sentence2tree(sentencedata, tokenlist)
     #     print(deprojz)
 
 

@@ -243,7 +243,7 @@ def get_mrg2txt_file_path(lang, split="train", pos="XPOS", epochs=20, is_target=
     if is_target:
         read_path = DATA_DIR / "common" / "constituentized" / f"lang={dir_abbr},pos={pos.lower()}" / f"{stnz_abbr}__{split}.mrg"
     else:
-        read_path = DATA_DIR / "downstream" / "upstream_outputs" / f"lang={dir_abbr},pos={pos.lower()}" / f"lang={stnz_abbr},split={split},pos={pos.lower()},epochs={epochs}.mrg"
+        read_path = DATA_DIR / "downstream" / "upstream_outputs" / f"lang={dir_abbr},pos={pos.lower()}" / f"lang={dir_abbr},split={split},pos={pos.lower()},epochs={epochs}.mrg"
 
     if not read_path.exists():
         raise FileNotFoundError(f"The file '{read_path}' does not exist.")

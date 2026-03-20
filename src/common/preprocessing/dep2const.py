@@ -21,7 +21,7 @@ def sentence2tree(sentencedata, tokenlist, pos_type="UPOS", add_starting_node=Tr
         Returns:
             Tree: A Tree object representing the syntactic structure of the subtree below the head id.
         """
-        
+
         children = dlookup.get(head_id, [])
         logger.debug(f"ID: {head_id}, Children: {children}")
 
@@ -61,7 +61,7 @@ def sentence2tree(sentencedata, tokenlist, pos_type="UPOS", add_starting_node=Tr
    
     
     tree = get_subtree(dlookup[0][0], tokenlist, dlookup)
-    
+
     if add_starting_node:
         return Tree("TOP", [tree])
     else:

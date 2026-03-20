@@ -40,16 +40,15 @@ def init_sentencedata(deprels):
 
     for k, v in deprels.items():
             d, h = k
+            dlookup[h] += [d] 
+            head_candidate_lookup[(h, v)] += [d]
             
             if "↑" in v:
                 stack += [k]
                 arcs.remove(k)
-            else:
-                dlookup[h] += [d] 
-                head_candidate_lookup[(h, v)] += [d]
-                if "↓" in v:
-                    path_candidate_lookup[h] += [d]
-                    parent_stack += [d]
+            elif "↓" in v:
+                path_candidate_lookup[h] += [d]
+                parent_stack += [d]
   
                 
     return SentenceData(
@@ -168,7 +167,31 @@ def count_non_projectivity(read_path):
         all_arcs += len(arcs)
     
     return all_non_proj_arcs / all_arcs * 100
-    
+
+def get_train_deprels(read_path):
+    all_deprels = []
+
+    sents = read_conllu(read_path)
+    for tokenlist, _ in sents:
+        for token in tokenlist:
+            if isinstance(token["id"], int):
+                all_deprels.append(token["deprel"])
+    return set(all_deprels)
+
+def sentence_add_to_train(train_path, dev_path):
+    add_to_train = []
+    added_labels = []
+    train_deprels = get_train_deprels(train_path)
+    sents = read_conllu(dev_path)
+    for i, (tokenlist, _) in enumerate(sents, start=1):
+        sent_id = tokenlist.metadata["sent_id"]
+        for token in tokenlist:
+            if isinstance(token["id"], int):
+                if token["deprel"] not in train_deprels and token["deprel"] not in added_labels:
+                        added_labels.append(token["deprel"])
+                        add_to_train.append((sent_id, i))
+    return add_to_train, added_labels
+
 def main():
     # ======================== Sample usage ====================================
     #    lang_name = ["Ancient_Greek", "English", "Danish", "Latin", "Old_East_Slavic", "Urdu"] 
