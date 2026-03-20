@@ -1,17 +1,11 @@
-Metric     | Precision |    Recall |  F1 Score | AligndAcc
------------+-----------+-----------+-----------+-----------
-Tokens     |    100.00 |    100.00 |    100.00 |
-Sentences  |    100.00 |    100.00 |    100.00 |
-Words      |    100.00 |    100.00 |    100.00 |
-UPOS       |    100.00 |    100.00 |    100.00 |    100.00
-XPOS       |    100.00 |    100.00 |    100.00 |    100.00
-UFeats     |    100.00 |    100.00 |    100.00 |    100.00
-AllTags    |    100.00 |    100.00 |    100.00 |    100.00
-Lemmas     |    100.00 |    100.00 |    100.00 |    100.00
-UAS        |     99.85 |     99.85 |     99.85 |     99.85
-LAS        |     99.81 |     99.81 |     99.81 |     99.81
-CLAS       |     99.79 |     99.80 |     99.80 |     99.80
-MLAS       |     99.77 |     99.78 |     99.78 |     99.78
-BLEX       |     99.79 |     99.80 |     99.80 |     99.80
-ELAS       |      0.00 |      0.00 |      0.00 |
-EULAS      |      0.00 |      0.00 |      0.00 |
+Traceback (most recent call last):
+  File "/Users/aikalee/Documents/dependency-recasting/models/eval.py", line 543, in <module>
+    main()
+    ~~~~^^
+  File "/Users/aikalee/Documents/dependency-recasting/models/eval.py", line 538, in main
+    evaluation = evaluate_wrapper(args)
+  File "/Users/aikalee/Documents/dependency-recasting/models/eval.py", line 486, in evaluate_wrapper
+    gold_ud = load_conllu_file(args.gold_file)
+  File "/Users/aikalee/Documents/dependency-recasting/models/eval.py", line 481, in load_conllu_file
+    _file = open(path, mode="r", **({"encoding": "utf-8"} if sys.version_info >= (3, 0) else {}))
+FileNotFoundError: [Errno 2] No such file or directory: 'predictions/neural/lang=en,pos=upos,epochs=100,deprojz=yes.conllu'
