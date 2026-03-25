@@ -221,7 +221,7 @@ def tree2sentence(lang, tree, pos_type="UPOS"):
                 subtree_head_id = find_head_id(subtree)                                               # not all subtrees have children
                 add_head_to_sentence(child, tokens, subtree_head_id, subtree.label())
 
-    if pos_type not in ["UPOS", "XPOS"]:
+    if pos_type.lower() not in ["upos", "xpos"]:
         print(f"Warning: Invalid POS tag '{pos_type}'. Using 'UPOS' by default.")
         pos_type = "UPOS"                                                                             # default to UPOS if not specified correctly
 

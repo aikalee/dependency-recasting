@@ -14,7 +14,7 @@ def mrg_to_conllu(lang, read_tree_path, read_conllu_path, write_path):
    
     with open(read_tree_path, "r", encoding="utf-8") as ftree, \
          open(read_conllu_path, "r", encoding="utf-8") as fconll:
-        for tree, tokenlist in tqdm(zip(ftree, parse_incr(fconll)), desc="Converting trees to sentences"):
+        for tree, tokenlist in tqdm(zip(ftree, parse_incr(fconll), strict=True), desc="Converting trees to sentences"):  # strict=True to make sure the number of sentences are the same
             tokens, is_illformed = tree2sentence(lang, Tree.fromstring(tree))
             # conllu = TokenList(tokens, metadata=tokenlist.metadata).serialize()
             
@@ -23,7 +23,7 @@ def mrg_to_conllu(lang, read_tree_path, read_conllu_path, write_path):
             #     tokenlist[idx]["deprel"] = token["deprel"] 
             
             for idx, orig in enumerate(tokenlist):
-                tokenlist[idx]["head"] = "_"               
+                tokenlist[idx]["head"] = "_"                    # make sure all tokens without predictions are blank
                 tokenlist[idx]["deprel"] = "_"
 
                 for upd in tokens:

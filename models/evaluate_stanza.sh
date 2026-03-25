@@ -12,11 +12,12 @@ echo "Now running in: $(pwd)"
 # EPOCH=("20" "100")
 
 MODE="rule_based"
-LANG="Uyghur"
-abbr="ug"
-dir_abbr="ug"
-treebank="UDT"
-treebank_lower="udt"
+LANG="English"
+abbr="en"
+dir_abbr="en-penn"
+treebank="Penn"
+treebank_lower="penn"
+pos="pred-upos"
 
 # declare -A ud_abbr
 # ud_abbr["Chinese"]="zh"
@@ -47,7 +48,7 @@ mkdir -p "$OUTPUT_DIR"
 # lowercase the treebank name (Penn → penn)
 # TBLOWER="${treebank,,}"
 
-MODELNAME="lang=${dir_abbr},pos=upos,epochs=100"
+MODELNAME="lang=${dir_abbr},pos=${pos},epochs=100"
 
 SYSFILE="predictions/${MODE}/${MODELNAME},deprojz=yes.conllu"
 GOLDFILE="data/raw/UD_${LANG}-${treebank}/${abbr}_${treebank_lower}-ud-test.conllu"

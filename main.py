@@ -3,9 +3,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 sys.path.append(str(ROOT / "src"))
+from src.upstream.replace_bracket import replace_bracket_upstream_inference
 from src.common.preprocessing.pipeline import common_preprocessing_pipeline
 from src.downstream.preprocessing.pipeline import downstream_preprocessing_pipeline
-from src.downstream.postprocessing.pipeline import postprocessing_pipeline
+from src.common.postprocessing.pipeline import postprocessing_pipeline
 
 # === for debugging ===
 from nltk.tree import Tree
@@ -30,9 +31,10 @@ def main():
         "Uyghur": "ug",
         "Wolof": "wo"
     """
-    common_preprocessing_pipeline(["English-Penn"], ["train", "dev", "test"], "UPOS")
-    # downstream_preprocessing_pipeline("Uyghur", ["train", "dev", "test"], "UPOS", 100, is_target=False)
-    # postprocessing_pipeline("Uyghur", "UPOS", 100, is_neural=True)
+    # replace_bracket_upstream_inference("Ancient_Greek", ["train", "dev", "test"])
+    # common_preprocessing_pipeline(["English-Penn"], ["train", "dev", "test"], "UPOS")
+    # downstream_preprocessing_pipeline("English-Penn", ["train", "dev", "test"], "upos", 100, is_target=False)
+    postprocessing_pipeline("English-Penn", "pred-upos", 100, is_neural=False)
     # preprocessing_pipeline("Ancient_Greek", ["train", "dev", "test"], "UPOS", 100, is_target=False)
     # preprocessing_pipeline("Ancient_Greek", ["train", "dev", "test"], "XPOS")
     # postprocessing_pipeline("English", False, "UPOS", ["20", "100"])
