@@ -163,10 +163,20 @@ def count_non_projectivity(read_path):
     sents = read_conllu(read_path)
     for _, sentencedata in sents:
         arcs = sentencedata.arcs
-        all_non_proj_arcs += len(get_non_proj_arcs(arcs))
+        if is_non_proj(arcs):
+            all_non_proj_arcs += len(get_non_proj_arcs(arcs))
         all_arcs += len(arcs)
-    
-    return all_non_proj_arcs / all_arcs * 100
+
+    return all_non_proj_arcs, all_arcs, all_non_proj_arcs / all_arcs * 100
+
+def count_deprels(read_path):
+    all_deprels = []
+    sents = read_conllu(read_path)
+    for tokenlist, _ in sents:
+        for token in tokenlist:
+            all_deprels.append(token["deprel"])
+    all_unique_deprels = set(all_deprels)
+    return all_unique_deprels, len(all_deprels)
 
 def get_train_deprels(read_path):
     all_deprels = []

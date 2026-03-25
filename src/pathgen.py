@@ -263,7 +263,6 @@ def get_mrg2txt_file_path(lang, split="train", pos="XPOS", epochs=20, is_target=
 
 def get_txt2mrg_file_path(lang, pos="XPOS", epochs=20):
     ud_abbr = UD_ABBR_LOOKUP[lang]
-    stnz_abbr = STNZ_ABBR_LOOKUP[lang]
     dir_abbr = DIR_ABBR_LOOKUP[lang]
     treebank = TREEBANK_LOOKUP[lang]
     if lang in ["English-Penn", "English-EWT"]:
@@ -281,4 +280,22 @@ def get_txt2mrg_file_path(lang, pos="XPOS", epochs=20):
 
     return read_linearized_path, read_source_path, read_orig_path, write_path
 
+def get_upsteam_inference_file_path(lang, split):
+    ud_abbr = UD_ABBR_LOOKUP[lang]
+    treebank = TREEBANK_LOOKUP[lang]
+
+    if lang in ["English-Penn", "English-EWT"]:
+        lang = lang.split("-")[0]
+
+    read_path = DATA_DIR / "raw" / f"UD_{lang}-{treebank}" / f"{ud_abbr}_{treebank.lower()}-ud-{split}.conllu"
+    output_dir = DATA_DIR / "upstream" / f"UD_{lang}-{treebank}" 
+    if not output_dir.exists():
+        output_dir.mkdir(parents=True, exist_ok=True)
+        print(f"Created: {output_dir}")
     
+    write_path = output_dir / f"{ud_abbr}_{treebank.lower()}-ud-{split}.conllu"
+
+    print(f"Loading from {read_path}...")
+    print(f"Writing into {write_path}...")
+
+    return read_path, write_path

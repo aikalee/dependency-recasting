@@ -51,7 +51,7 @@ def sentence2tree(sentencedata, tokenlist, pos_type="UPOS", add_starting_node=Tr
             deprel = deprel.replace(":", "_")
         return Tree(deprel, branches)
 
-    if pos_type not in ["UPOS", "XPOS"]:
+    if pos_type.lower() not in ["upos", "xpos"]:
         print(f"Warning: Invalid POS tag '{pos_type}'. Using 'UPOS' by default.")
         pos_type = "UPOS"  # default to UPOS if not specified correctly
 

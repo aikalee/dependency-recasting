@@ -37,7 +37,7 @@ def common_preprocessing_pipeline(lang_name, split_name, pos):
 
 
 def main():
-    preprocessing_pipeline()
+    common_preprocessing_pipeline()
 
 if __name__ == "__main__":
     main()
