@@ -57,7 +57,8 @@ def postprocessing_pipeline(lang_name, pos="XPOS", epochs=20, is_neural=False):
     
     for para in paras:
         read_path, write_path = get_deprojz_file_path(*para)
-        rewrite_conllu(read_path, write_path, False)
+        restore_arcs_count = rewrite_conllu(read_path, write_path, False)
+        print()
 
     # === Remove mismatched sentences ===
     # paras = list(product(lang_name, model, bert, charlm, pretrain, epochs))

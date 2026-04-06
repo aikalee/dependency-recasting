@@ -1,4 +1,3 @@
-from copy import deepcopy
 from collections import Counter, defaultdict
 
 def is_non_proj(arcs) -> bool:
@@ -55,40 +54,89 @@ def get_non_proj_arcs(arcs, symmetric_counting=False, return_intersecting_arcs=F
 
 def projectivize(arcs, symmetric_counting=False, dlookup=None, return_all=False, count_steps=False):
 
-    arcs = deepcopy(arcs) # no root token
+    arcs = arcs.copy()
     hlookup = dict(arcs)
-    lifted_tokens = []
-    lifted_arcs = []
+
+    lifted_indices = []
+    lift_counts = {}   
          
     while is_non_proj(arcs):
+  
         non_proj_arcs = get_non_proj_arcs(arcs, symmetric_counting=symmetric_counting, dlookup=dlookup)
-        # print(non_proj_arcs)
-        sorted_non_proj_arcs = sorted(list(non_proj_arcs.keys()), key=lambda x: x[0])
-        smallest_distance = float('inf')
-        smallest_arc = None
 
-        for dep, head in sorted_non_proj_arcs:
-            distance = abs(int(head) - int(dep))
-            if smallest_distance > distance and hlookup[head] != 0:
-                smallest_distance = distance
-                smallest_arc = (dep, head)
-            # else:
+        for d, h in non_proj_arcs:
+            i = int(d)-1
+            lift_counts.setdefault(i, 0)
 
-
-                # print(f"head: {head}, dep: {dep}, distance: {distance}, smallest_distance: {smallest_distance}")
-
-        smallest_dep, smallest_head = smallest_arc
-        new_head = hlookup[smallest_head]
-        arcs[smallest_dep-1] = (smallest_dep, new_head)
-        lifted_tokens.append(smallest_dep)
     
-    for token in set(lifted_tokens):
-        if token == arcs[token-1][0]:
-            lifted_arcs.append(arcs[token-1])
+        min_value = min(lift_counts.values())
+
+        # find the least lifted arcs
+        while True:
+            candidate_arcs = [
+                arc 
+                for k, v in lift_counts.items()
+                if v == min_value 
+                and (arc := arcs[k]) in non_proj_arcs 
+                and hlookup[arc[1]] != 0
+            ]
+            if candidate_arcs:
+                break
+            
+            min_value += 1
+            
+        cross_counts = {k: non_proj_arcs[k] for k in candidate_arcs} # cross counts of candidate arcs
+       
+
+        # If there are more than one cross_counts, select the leftmost arc among the most crossed arcs
+        # Otherwise, select the leftmost arc
+
+        if len(set(cross_counts)) > 1:
+            # most_crossed_arcs = max(cross_counts, key=non_proj_arcs.get) 
+            max_cross_count = max(cross_counts.values())
+            most_crossed_arcs = [arc for arc, cross_count in cross_counts.items() if cross_count == max_cross_count]
+
+            if len(most_crossed_arcs) > 1 :
+                selected = min(most_crossed_arcs, key=lambda t: min(t[0], t[1])) 
+            else: 
+                selected = most_crossed_arcs[0]
+
         else:
-            raise ValueError("Token ids do not match.")
+            selected = min(cross_counts, key=lambda t: min(t[0], t[1]))
+
+        d, h = selected
+        idx = d-1
+        
+        head_of_h = hlookup[h]
+        projectivized = (d, head_of_h)
+        arcs[idx] = projectivized
+
+        lifted_indices.append(idx)
+        lift_counts[idx] += 1
     
-    return lifted_arcs
+    # Turn indices into arcs
+    lifted_arcs = []
+    
+    for idx in lifted_indices:
+
+        lifted_arc = arcs[idx]
+        lifted_arcs.append(lifted_arc)
+
+
+    if return_all:
+        results = [arcs, lifted_arcs]
+    else:
+        results = [lifted_arcs]
+    
+    if count_steps:
+        results += [sum(lift_counts.values())]
+
+    if len(results) > 1:
+        results = tuple(results)
+    else:
+        results = results[0]
+    
+    return results
 
 def relabel(orig_deprels, projz_arcs, head: bool = False, path: bool = True) -> dict:
 
@@ -97,9 +145,7 @@ def relabel(orig_deprels, projz_arcs, head: bool = False, path: bool = True) -> 
     
     hlookup = dict(orig_deprels.keys())
     projz_deprels = {}
-    changed_tokens = []
 
-    # print(projz_arcs)
 
     for d, goal_h in projz_arcs:
 
@@ -108,10 +154,7 @@ def relabel(orig_deprels, projz_arcs, head: bool = False, path: bool = True) -> 
 
        
         head_of_h = hlookup[h]
-        if orig_deprels.get((h, head_of_h), None):
-            parent_deprel = orig_deprels[(h, head_of_h)]
-        else:
-            parent_deprel = projz_deprels[(h, head_of_h)]
+        parent_deprel = orig_deprels[(h, head_of_h)]
         
         projz_deprel = orig_deprel + "↑"
 
@@ -119,22 +162,10 @@ def relabel(orig_deprels, projz_arcs, head: bool = False, path: bool = True) -> 
             projz_deprel += parent_deprel 
 
         projz_deprels[(d, goal_h)] = projz_deprel
-        changed_tokens.append(d) 
-        # print(projz_deprels)
-        orig_deprels.pop((d, h))
-        hlookup[d] = goal_h
-        
-
-        head_of_h = hlookup[h]
 
         if path:
-            
-            # if d not in changed_tokens:
             new_parent_deprel = parent_deprel + "↓"
             projz_deprels[(h, head_of_h)] = new_parent_deprel
-            # else:
-            #     new_parent_deprel = projz_deprels.get((d, goal_h)) + "↓"
-            #     projz_deprels[(d, goal_h)] = new_parent_deprel
        
 
     return projz_deprels

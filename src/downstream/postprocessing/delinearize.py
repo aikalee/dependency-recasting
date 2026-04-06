@@ -19,6 +19,10 @@ def linearized_to_ptb(line: str, word_prefix: str = "word", start_index: int = 0
     for tok in tokens:
         if tok.startswith("(") and len(tok) > 1:
             label = tok[1:]
+            if "-down" in label:
+                label = label.replace("-down", "↓")
+            elif "-up" in label:
+                label = label.replace("-up", "↑")
             out.append(f"({label}")
         elif tok.startswith(")") and len(tok) > 1:
             out.append(")")

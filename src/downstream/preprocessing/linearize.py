@@ -11,8 +11,15 @@ def _parse(tree_str, i):
     label = None
     children = []
 
-    while tree_str[i] != ')':                                                                    # collect all the children (e.g., "(discourse" before seeing a ")"
-        label = "PUNCT" if label == "." else label                                              
+    while tree_str[i] != ')':    
+        if label is not None:                                                                # collect all the children (e.g., "(discourse" before seeing a ")"
+            if label == ".":
+                label = "PUNCT"
+            elif "↓" in label:
+                label = label.replace("↓", "-down")
+            elif "↑" in label:
+                label = label.replace("↑", "-up")
+                                                                                               
         if tree_str[i] == '(':                                                                   # depth-first search, will return (None, chilren)
             i, child = _parse(tree_str, i)                                                       # children = [(label, children), (label, children)]
             children.append(child)

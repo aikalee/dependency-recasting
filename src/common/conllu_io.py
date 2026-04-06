@@ -8,7 +8,7 @@ from itertools import product
 from typing import Optional
 
 from src.common.preprocessing.projectivize import is_non_proj, get_non_proj_arcs, projectivize, relabel
-from src.common.postprocessing.deprojectivize import deprojectivize_by_head, deprojectivize_by_path, is_projz
+from src.common.postprocessing.deprojectivize import deprojectivize_by_path, is_projz
 
 
 @dataclass
@@ -20,46 +20,51 @@ class SentenceData:
 
     head_candidate_lookup: Optional[dict] = None
     path_candidate_lookup: Optional[dict] = None
+    tokens_with_arrows: Optional[list] = None
     dlookup: Optional[dict] = None
     
     stack: Optional[deque] = None
-    parent_stack: Optional[deque] = None
+    # parent_stack: Optional[deque] = None
 
 def init_sentencedata(deprels):
 
     arcs = list(deprels.keys())
     num_tokens = len(arcs)
 
-    head_candidate_lookup = defaultdict(list) 
+    # head_candidate_lookup = defaultdict(list) 
     path_candidate_lookup = defaultdict(list)
+    tokens_with_arrows = []
     dlookup = defaultdict(list)
     
 
     stack = deque()
-    parent_stack = deque()
+    # parent_stack = deque()
 
     for k, v in deprels.items():
             d, h = k
             dlookup[h] += [d] 
-            head_candidate_lookup[(h, v)] += [d]
+            # head_candidate_lookup[(h, v)] += [d]
             
             if "↑" in v:
                 stack += [k]
-                arcs.remove(k)
+                # arcs.remove(k)
+                tokens_with_arrows.append(k)
             elif "↓" in v:
                 path_candidate_lookup[h] += [d]
-                parent_stack += [d]
+                # parent_stack += [d]
+                tokens_with_arrows.append(k)
   
                 
     return SentenceData(
         arcs=arcs, 
         num_tokens=num_tokens, 
         deprels=deprels, 
-        head_candidate_lookup=head_candidate_lookup, 
+        # head_candidate_lookup=head_candidate_lookup, 
         path_candidate_lookup=path_candidate_lookup,
+        tokens_with_arrows=tokens_with_arrows,
         dlookup=dlookup, 
         stack=stack,
-        parent_stack=parent_stack
+        # parent_stack=parent_stack
         )
 
 def read_conllu(file_path):
@@ -136,16 +141,16 @@ def rewrite_conllu(read_path, write_path, projz_mode=True, pseudo_filter=False) 
         if projz_mode:
             if is_non_proj(arcs):
                 projz_arcs = projectivize(arcs, symmetric_counting=True, dlookup=dlookup)
-                projz_deprels = relabel(deprels, projz_arcs)      
-                tokenlist = reconstruct_conllu(tokenlist, projz_deprels)    
+                projz_deprels = relabel(deprels, projz_arcs)  
+                tokenlist = reconstruct_conllu(tokenlist, projz_deprels)
         
             elif pseudo_filter:
                 continue
         
         else:
             if is_projz(deprels):
-                deprojz_deprels = deprojectivize_by_path(sentencedata)
-                tokenlist = reconstruct_conllu(tokenlist, deprojz_deprels)
+                updated_deprels, _ = deprojectivize_by_path(sentencedata)
+                tokenlist = reconstruct_conllu(tokenlist, updated_deprels)
        
         conllu = tokenlist.serialize()        
 
@@ -155,52 +160,7 @@ def rewrite_conllu(read_path, write_path, projz_mode=True, pseudo_filter=False) 
                 # print("Write sucessful:", tokenlist.metadata["sent_id"])
         except Exception as e:
             print("‼️ Write failed:", e)
-
-def count_non_projectivity(read_path):
-    all_non_proj_arcs = 0
-    all_arcs = 0
-
-    sents = read_conllu(read_path)
-    for _, sentencedata in sents:
-        arcs = sentencedata.arcs
-        if is_non_proj(arcs):
-            all_non_proj_arcs += len(get_non_proj_arcs(arcs))
-        all_arcs += len(arcs)
-
-    return all_non_proj_arcs, all_arcs, all_non_proj_arcs / all_arcs * 100
-
-def count_deprels(read_path):
-    all_deprels = []
-    sents = read_conllu(read_path)
-    for tokenlist, _ in sents:
-        for token in tokenlist:
-            all_deprels.append(token["deprel"])
-    all_unique_deprels = set(all_deprels)
-    return all_unique_deprels, len(all_deprels)
-
-def get_train_deprels(read_path):
-    all_deprels = []
-
-    sents = read_conllu(read_path)
-    for tokenlist, _ in sents:
-        for token in tokenlist:
-            if isinstance(token["id"], int):
-                all_deprels.append(token["deprel"])
-    return set(all_deprels)
-
-def sentence_add_to_train(train_path, dev_path):
-    add_to_train = []
-    added_labels = []
-    train_deprels = get_train_deprels(train_path)
-    sents = read_conllu(dev_path)
-    for i, (tokenlist, _) in enumerate(sents, start=1):
-        sent_id = tokenlist.metadata["sent_id"]
-        for token in tokenlist:
-            if isinstance(token["id"], int):
-                if token["deprel"] not in train_deprels and token["deprel"] not in added_labels:
-                        added_labels.append(token["deprel"])
-                        add_to_train.append((sent_id, i))
-    return add_to_train, added_labels
+        
 
 def main():
     # ======================== Sample usage ====================================
