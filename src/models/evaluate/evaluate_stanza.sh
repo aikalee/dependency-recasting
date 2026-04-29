@@ -11,13 +11,13 @@ echo "Now running in: $(pwd)"
 
 # EPOCH=("20" "100")
 
-MODE="rule_based"
-LANG="English"
-abbr="en"
-dir_abbr="en-penn"
-treebank="Penn"
-treebank_lower="penn"
-pos="pred-upos"
+MODE="neural"
+LANG="Ancient_Greek"
+abbr="grc"
+dir_abbr="grc"
+treebank="Perseus"
+treebank_lower="perseus"
+pos="upos"
 
 # declare -A ud_abbr
 # ud_abbr["Chinese"]="zh"

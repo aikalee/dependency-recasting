@@ -3,6 +3,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 DATA_DIR = BASE_DIR / "data"
+SRC_DIR = BASE_DIR / "src"
 PREDICTION_DIR = BASE_DIR / "predictions"
 
 UD_ABBR_LOOKUP = {
@@ -45,7 +46,8 @@ DIR_ABBR_LOOKUP = {
     "Russian": "ru",
     "Tamil": "ta",
     "Uyghur": "ug",
-    "Wolof": "wo"
+    "Wolof": "wo",
+    "combined": "combined"
     }
 
 
@@ -62,7 +64,127 @@ TREEBANK_LOOKUP = {
     "Uyghur": "UDT",
     "Wolof": "WTB"
     }
-     
+
+def check_dir(output_dir):
+    if not output_dir.exists():
+        output_dir.mkdir(parents=True, exist_ok=True)
+        print(f"Created: {output_dir}")
+    
+
+def get_raw_conllu_path(lang, split):
+    ud_abbr = UD_ABBR_LOOKUP[lang]
+    treebank = TREEBANK_LOOKUP[lang]
+  
+    if lang in ["English-Penn", "English-EWT"]:
+        lang = lang.split("-")[0]
+    folder = DATA_DIR / "upstream" / f"UD_{lang}-{treebank}"
+    path = f"{ud_abbr}_{treebank.lower()}-ud-{split}.conllu"
+    check_dir(folder)
+    return folder / path
+
+def get_projectivized_conllu_path(lang, split):
+    ud_abbr = UD_ABBR_LOOKUP[lang]
+    treebank = TREEBANK_LOOKUP[lang]
+
+    if lang in ["English-Penn", "English-EWT"]:
+        lang = lang.split("-")[0]
+    folder = DATA_DIR / "common" / "projectivized" /f"UD_{lang}-{treebank}" 
+    path = f"{ud_abbr}__{split}.conllu"
+    check_dir(folder)
+    return folder / path
+
+def get_constituentized_mrg_path(lang, pos, split):
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
+    stnz_abbr = STNZ_ABBR_LOOKUP[lang]
+    
+    folder = DATA_DIR / "common" / "constituentized" /f"lang={dir_abbr},pos={pos.lower()}" 
+    path = f"{stnz_abbr}__{split}.mrg"
+    check_dir(folder)
+    return folder / path
+
+def get_predicted_mrg_path(lang, pos, epochs):
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
+    
+    folder = PREDICTION_DIR / "raw"
+    path = f"lang={dir_abbr},split=test,pos={pos.lower()},epochs={epochs}.mrg"
+    check_dir(folder)
+    return folder / path
+
+def get_upstream_output_path(lang, pos, split, epochs=100):
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
+
+    folder = DATA_DIR / "downstream" / "upstream_outputs" / f"lang={dir_abbr},pos={pos.lower()}"
+    path = f"lang={dir_abbr},split={split},pos={pos.lower()},epochs={epochs}.mrg"
+    check_dir(folder)
+    return folder / path
+
+def get_linearized_txt_path(lang, pos, split, is_target=True):
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
+
+    folder = DATA_DIR / "downstream" / "linearized" / f"lang={dir_abbr},pos={pos.lower()}"
+    path = f"{split}.tgt.txt" if is_target else f"{split}.src.txt"
+    check_dir(folder)
+    return folder / path
+
+def get_edit_actions_json_path(lang, pos, split):
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
+
+    folder = DATA_DIR / "downstream" / "edit_actions" / f"lang={dir_abbr},pos={pos.lower()}"
+    path = f"{split}.json"
+    check_dir(folder)
+    return folder, folder / path
+
+def get_structured_tokens_json_path(lang, pos, split):
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
+
+    folder = DATA_DIR / "downstream" / "structured_tokens" / f"lang={dir_abbr},pos={pos.lower()}"
+    path = f"{split}.json"
+    check_dir(folder)
+    return folder / path
+
+def get_combined_txt_path(split, is_target):
+    folder = DATA_DIR / "downstream" / "linearized" / "lang=combined,pos=upos"
+    path = f"{split}.tgt.txt" if is_target else f"{split}.src.txt"
+    check_dir(folder)
+    return folder / path
+
+def get_combined_edit_actions_json_path(split):
+    folder = DATA_DIR / "downstream" / "edit_actions" / "lang=combined,pos=upos"
+    path = f"{split}.json"
+    check_dir(folder)
+    return folder / path
+
+def get_vocab_dir():
+    folder = BASE_DIR / "artifacts" 
+    check_dir(folder)
+    return folder
+    
+def get_delinearized_mrg_path(lang, pos, epochs):
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
+
+    folder = PREDICTION_DIR / "neural"
+    path = f"lang={dir_abbr},pos={pos.lower()},epochs={epochs}.mrg" 
+    check_dir(folder)
+    return folder / path
+
+def get_rewritten_conllu_path(lang, pos="upos", epochs=100, is_neural=True):
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
+
+    folder_name = "neural" if is_neural else "rule_based"
+    folder  = PREDICTION_DIR / folder_name
+    path = f"lang={dir_abbr},pos={pos.lower()},epochs={epochs}.conllu" 
+    check_dir(folder)
+    return folder / path
+
+def get_deprojectivized_conllu_path(lang, pos, epochs):
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
+
+    folder  = PREDICTION_DIR / "neural"
+    path = f"lang={dir_abbr},pos={pos.lower()},epochs={epochs},deprojz=yes.conllu"
+    check_dir(folder)
+    return folder / path
+
+# =======================
 
 def get_projz_file_path(lang, split, is_common=True):
     """
@@ -94,7 +216,7 @@ def get_projz_file_path(lang, split, is_common=True):
     
     return read_path, write_path
 
-def get_dep2const_file_path(lang="Chinese", split="train", pos="XPOS", is_common=True):
+def get_dep2const_file_path(lang="Chinese", split="train", pos="UPOS", is_common=True):
     """
     Input file name: lang_method_split
     Output dir name: lang=en
