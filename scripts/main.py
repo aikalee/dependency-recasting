@@ -1,23 +1,29 @@
+import os
 import sys
+
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
-sys.path.append(str(ROOT / "src"))
-from src.upstream.replace_bracket import replace_bracket_upstream_inference
-from src.common.preprocessing.pipeline import common_preprocessing_pipeline
-from src.downstream.preprocessing.pipeline import downstream_preprocessing_pipeline
-from src.downstream.preprocessing.replace_pos import replace_pos_downstream_preprocessing
-from src.downstream.preprocessing.mrg2txt import mrg2txt
-from src.common.postprocessing.pipeline import postprocessing_pipeline
+ROOT = Path(__file__).resolve().parents[1]
+os.chdir(ROOT)
+sys.path.insert(0, str(ROOT))
+
+from src.data.upstream.replace_bracket import replace_bracket_upstream_inference
+from src.data.common.preprocessing.pipeline import common_preprocessing_pipeline
+from src.data.downstream.preprocessing.pipeline import downstream_preprocessing_pipeline
+from src.data.downstream.preprocessing.replace_pos import replace_pos_downstream_preprocessing
+from src.data.downstream.preprocessing.mrg2txt import mrg2txt
+from src.data.common.postprocessing.pipeline import postprocessing_pipeline
+from src.data.downstream.preprocessing.combine_datasets import combine_datasets
+from src.data.downstream.preprocessing.build_vocab_from_datasets import write_to_json
 
 # === for debugging ===
 from nltk.tree import Tree
-from src.common.conllu_io import read_conllu, rewrite_conllu, reconstruct_conllu
-from src.common.postprocessing.mrg_to_conllu import mrg_to_conllu
-from src.downstream.postprocessing.txt2mrg import txt2mrg
-from src.common.preprocessing.dep2const import sentence2tree
-from src.common.postprocessing.deprojectivize import deprojectivize_by_path
-from src.common.preprocessing.projectivize import projectivize, relabel
+from src.data.common.conllu_io import read_conllu, rewrite_conllu, reconstruct_conllu
+from src.data.common.postprocessing.mrg_to_conllu import mrg_to_conllu
+from src.data.downstream.postprocessing.txt2mrg import txt2mrg
+from src.data.common.preprocessing.dep2const import sentence2tree
+from src.data.common.postprocessing.deprojectivize import deprojectivize_by_path
+from src.data.common.preprocessing.projectivize import projectivize, relabel
 
 
 def main():
@@ -35,9 +41,12 @@ def main():
         "Uyghur": "ug",
         "Wolof": "wo"
     """
+    combine_langs = ["Ancient_Greek", "English-EWT", "English-Penn", "Finnish", "French", "Hebrew", "Russian",  "Tamil",  "Uyghur", "Wolof"]
+    # combine_datasets()
     # replace_bracket_upstream_inference("Ancient_Greek", ["train", "dev", "test"])
-    common_preprocessing_pipeline(["Ancient_Greek"], ["train", "dev", "test"], "UPOS")
-    downstream_preprocessing_pipeline("Ancient_Greek", ["train", "dev", "test"], "UPOS", 100, is_target=True)
+    # common_preprocessing_pipeline(combine_langs, ["train", "dev", "test"], "UPOS")
+    # downstream_preprocessing_pipeline("combined", ["train", "dev"], "UPOS", 100, is_target=False)
+    write_to_json(langs=combine_langs)
     # preprocessing_pipeline("Ancient_Greek", ["train", "dev", "test"], "XPOS")
     # postprocessing_pipeline("Ancient_Greek", "upos", 100, is_neural=True)
     # preprocessing_pipeline("Chinese", ["train", "dev", "test"])

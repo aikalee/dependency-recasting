@@ -3,6 +3,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 DATA_DIR = BASE_DIR / "data"
+SRC_DIR = BASE_DIR / "src"
 PREDICTION_DIR = BASE_DIR / "predictions"
 
 UD_ABBR_LOOKUP = {
@@ -45,7 +46,8 @@ DIR_ABBR_LOOKUP = {
     "Russian": "ru",
     "Tamil": "ta",
     "Uyghur": "ug",
-    "Wolof": "wo"
+    "Wolof": "wo",
+    "combined": "combined"
     }
 
 
@@ -75,7 +77,7 @@ def get_raw_conllu_path(lang, split):
   
     if lang in ["English-Penn", "English-EWT"]:
         lang = lang.split("-")[0]
-    folder = DATA_DIR / "raw" / f"UD_{lang}-{treebank}"
+    folder = DATA_DIR / "upstream" / f"UD_{lang}-{treebank}"
     path = f"{ud_abbr}_{treebank.lower()}-ud-{split}.conllu"
     check_dir(folder)
     return folder / path
@@ -91,7 +93,7 @@ def get_projectivized_conllu_path(lang, split):
     check_dir(folder)
     return folder / path
 
-def get_constituentized_mrg_path(lang, split, pos):
+def get_constituentized_mrg_path(lang, pos, split):
     dir_abbr = DIR_ABBR_LOOKUP[lang]
     stnz_abbr = STNZ_ABBR_LOOKUP[lang]
     
@@ -108,7 +110,7 @@ def get_predicted_mrg_path(lang, pos, epochs):
     check_dir(folder)
     return folder / path
 
-def get_upstream_output_path(lang, split, pos="upos", epochs=100):
+def get_upstream_output_path(lang, pos, split, epochs=100):
     dir_abbr = DIR_ABBR_LOOKUP[lang]
 
     folder = DATA_DIR / "downstream" / "upstream_outputs" / f"lang={dir_abbr},pos={pos.lower()}"
@@ -124,14 +126,39 @@ def get_linearized_txt_path(lang, pos, split, is_target=True):
     check_dir(folder)
     return folder / path
 
-def get_edit_actions_txt_path(lang, pos, split):
+def get_edit_actions_json_path(lang, pos, split):
     dir_abbr = DIR_ABBR_LOOKUP[lang]
 
     folder = DATA_DIR / "downstream" / "edit_actions" / f"lang={dir_abbr},pos={pos.lower()}"
-    path = f"{split}.tgt.txt"
+    path = f"{split}.json"
+    check_dir(folder)
+    return folder, folder / path
+
+def get_structured_tokens_json_path(lang, pos, split):
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
+
+    folder = DATA_DIR / "downstream" / "structured_tokens" / f"lang={dir_abbr},pos={pos.lower()}"
+    path = f"{split}.json"
     check_dir(folder)
     return folder / path
 
+def get_combined_txt_path(split, is_target):
+    folder = DATA_DIR / "downstream" / "linearized" / "lang=combined,pos=upos"
+    path = f"{split}.tgt.txt" if is_target else f"{split}.src.txt"
+    check_dir(folder)
+    return folder / path
+
+def get_combined_edit_actions_json_path(split):
+    folder = DATA_DIR / "downstream" / "edit_actions" / "lang=combined,pos=upos"
+    path = f"{split}.json"
+    check_dir(folder)
+    return folder / path
+
+def get_vocab_dir():
+    folder = BASE_DIR / "artifacts" 
+    check_dir(folder)
+    return folder
+    
 def get_delinearized_mrg_path(lang, pos, epochs):
     dir_abbr = DIR_ABBR_LOOKUP[lang]
 
