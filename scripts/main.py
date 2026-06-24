@@ -15,6 +15,7 @@ from src.data.downstream.preprocessing.mrg2txt import mrg2txt
 from src.data.common.postprocessing.pipeline import postprocessing_pipeline
 from src.data.downstream.preprocessing.combine_datasets import combine_datasets
 from src.data.downstream.preprocessing.build_vocab_from_datasets import write_to_json
+from src.data.downstream.postprocessing.structured_tokens_pipeline import structured_tokens_postprocessing_pipeline
 
 # === for debugging ===
 from nltk.tree import Tree
@@ -41,13 +42,21 @@ def main():
         "Uyghur": "ug",
         "Wolof": "wo"
     """
+
+    """
+    Steps:
+    1) Downstream preprocess combine_langs
+    2) Combine datasets into one dataset and write vocab and weight to json
+    3) Downstream preprocess combined dataset
+    """
     combine_langs = ["Ancient_Greek", "English-EWT", "English-Penn", "Finnish", "French", "Hebrew", "Russian",  "Tamil",  "Uyghur", "Wolof"]
     # combine_datasets()
     # replace_bracket_upstream_inference("Ancient_Greek", ["train", "dev", "test"])
     # common_preprocessing_pipeline(combine_langs, ["train", "dev", "test"], "UPOS")
-    downstream_preprocessing_pipeline("combined", ["train", "dev"], "UPOS", 100, is_target=True)
-    # downstream_preprocessing_pipeline(combine_langs, ["train", "dev"], "UPOS", 100, is_target=True)
-    # write_to_json(langs=combine_langs, max_weight=10)
+    # downstream_preprocessing_pipeline("English-Penn", ["test"], "UPOS", 100, is_target=True, overlap=3)
+    structured_tokens_postprocessing_pipeline(lang_name="English-Penn", pos="upos", epochs=100, gate="yes")
+    # downstream_preprocessing_pipeline(combine_langs, ["train", "dev", "test"], "UPOS", 100, is_target=True)
+    # write_to_json(langs=combine_langs, max_weight=20)
     # preprocessing_pipeline("Ancient_Greek", ["train", "dev", "test"], "XPOS")
     # postprocessing_pipeline("Ancient_Greek", "upos", 100, is_neural=True)
     # preprocessing_pipeline("Chinese", ["train", "dev", "test"])

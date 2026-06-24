@@ -77,6 +77,19 @@ def get_raw_conllu_path(lang, split):
   
     if lang in ["English-Penn", "English-EWT"]:
         lang = lang.split("-")[0]
+    folder = DATA_DIR / "raw" / f"UD_{lang}-{treebank}"
+    # folder = DATA_DIR / "upstream" / f"UD_{lang}-{treebank}"
+    path = f"{ud_abbr}_{treebank.lower()}-ud-{split}.conllu"
+    check_dir(folder)
+    return folder / path
+
+def get_upstream_conllu_path(lang, split):
+    ud_abbr = UD_ABBR_LOOKUP[lang]
+    treebank = TREEBANK_LOOKUP[lang]
+  
+    if lang in ["English-Penn", "English-EWT"]:
+        lang = lang.split("-")[0]
+    # folder = DATA_DIR / "upstream" / f"UD_{lang}-{treebank}"
     folder = DATA_DIR / "upstream" / f"UD_{lang}-{treebank}"
     path = f"{ud_abbr}_{treebank.lower()}-ud-{split}.conllu"
     check_dir(folder)
@@ -126,6 +139,15 @@ def get_linearized_txt_path(lang, pos, split, is_target=True):
     check_dir(folder)
     return folder / path
 
+def get_lang_txt_path(lang, pos, split):
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
+
+    folder = DATA_DIR / "downstream" / "linearized" / f"lang={dir_abbr},pos={pos.lower()}"
+    path = f"{split}.lang.txt" 
+    check_dir(folder)
+    return folder / path
+
+
 def get_edit_actions_json_path(lang, pos, split):
     dir_abbr = DIR_ABBR_LOOKUP[lang]
 
@@ -134,10 +156,11 @@ def get_edit_actions_json_path(lang, pos, split):
     check_dir(folder)
     return folder, folder / path
 
-def get_structured_tokens_json_path(lang, pos, split):
+def get_structured_tokens_json_path(lang, pos, split, overlap=0):
     dir_abbr = DIR_ABBR_LOOKUP[lang]
 
-    folder = DATA_DIR / "downstream" / "structured_tokens" / f"lang={dir_abbr},pos={pos.lower()}"
+    filename = f"lang={dir_abbr},pos={pos.lower()},overlap={overlap}" if overlap > 0 else f"lang={dir_abbr},pos={pos.lower()}"
+    folder = DATA_DIR / "downstream" / "structured_tokens" / filename
     path = f"{split}.json"
     check_dir(folder)
     return folder / path
@@ -145,6 +168,12 @@ def get_structured_tokens_json_path(lang, pos, split):
 def get_combined_txt_path(split, is_target):
     folder = DATA_DIR / "downstream" / "linearized" / "lang=combined,pos=upos"
     path = f"{split}.tgt.txt" if is_target else f"{split}.src.txt"
+    check_dir(folder)
+    return folder / path
+
+def get_combined_langs_txt_path(split):
+    folder = DATA_DIR / "downstream" / "linearized" / "lang=combined,pos=upos"
+    path = f"{split}.lang.txt"
     check_dir(folder)
     return folder / path
 
@@ -158,6 +187,55 @@ def get_vocab_dir():
     folder = BASE_DIR / "artifacts" 
     check_dir(folder)
     return folder
+
+def get_predicted_structured_tokens_json_path(lang, pos, gate):
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
+
+    folder = PREDICTION_DIR / "neural"
+    path = f"lang={dir_abbr},pos={pos.lower()},gate={gate}.json"
+    check_dir(folder)
+    return folder / path
+
+def get_linearized_structured_tokens_txt_path(lang, pos, gate):
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
+
+    folder = PREDICTION_DIR / "neural"
+    path = f"lang={dir_abbr},pos={pos.lower()},gate={gate}.txt"
+    check_dir(folder)
+    return folder / path
+
+def get_delinearized_structured_tokens_mrg_path(lang, pos, gate):
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
+
+    folder = PREDICTION_DIR / "neural"
+    path = f"lang={dir_abbr},pos={pos.lower()},gate={gate}.mrg"
+    check_dir(folder)
+    return folder / path
+
+def get_structured_tokens_conllu_path(lang, pos, gate):
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
+
+    folder  = PREDICTION_DIR / "neural"
+    path = f"lang={dir_abbr},pos={pos.lower()},gate={gate}.conllu" 
+    check_dir(folder)
+    return folder / path
+
+def get_deprojectivized_structured_tokens_conllu_path(lang, pos, gate):
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
+
+    folder  = PREDICTION_DIR / "neural"
+    path = f"lang={dir_abbr},pos={pos.lower()},gate={gate},deprojz=yes.conllu"
+    check_dir(folder)
+    return folder / path
+
+
+def get_predicted_linearized_txt_path(lang, pos, epochs):
+    dir_abbr = DIR_ABBR_LOOKUP[lang]
+
+    folder = PREDICTION_DIR / "neural"
+    path = f"lang={dir_abbr},pos={pos.lower()},epochs={epochs}.txt"
+    check_dir(folder)
+    return folder / path
     
 def get_delinearized_mrg_path(lang, pos, epochs):
     dir_abbr = DIR_ABBR_LOOKUP[lang]
