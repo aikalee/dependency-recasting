@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PROJECT_ROOT=$(dirname "$(dirname "$(realpath "$0")")")
+PROJECT_ROOT=$(dirname "$(dirname "$(dirname "$(dirname "$(realpath "$0")")")")")
 
 # === Add project root to PATH (similar to Python sys.path.insert) ===
 export PATH="$PROJECT_ROOT:$PATH"
@@ -12,11 +12,11 @@ echo "Now running in: $(pwd)"
 # EPOCH=("20" "100")
 
 MODE="neural"
-LANG="Ancient_Greek"
-abbr="grc"
-dir_abbr="grc"
-treebank="Perseus"
-treebank_lower="perseus"
+LANG="English"
+abbr="en"
+dir_abbr="en-penn"
+treebank="Penn"
+treebank_lower="penn"
 pos="upos"
 
 # declare -A ud_abbr
@@ -48,7 +48,8 @@ mkdir -p "$OUTPUT_DIR"
 # lowercase the treebank name (Penn → penn)
 # TBLOWER="${treebank,,}"
 
-MODELNAME="lang=${dir_abbr},pos=${pos},epochs=100"
+# MODELNAME="lang=${dir_abbr},pos=${pos},epochs=100"
+MODELNAME="lang=${dir_abbr},pos=${pos},gate=yes"
 
 SYSFILE="predictions/${MODE}/${MODELNAME},deprojz=yes.conllu"
 GOLDFILE="data/raw/UD_${LANG}-${treebank}/${abbr}_${treebank_lower}-ud-test.conllu"
@@ -56,7 +57,7 @@ GOLDFILE="data/raw/UD_${LANG}-${treebank}/${abbr}_${treebank_lower}-ud-test.conl
 OUTPUT="$OUTPUT_DIR/validation,${MODELNAME}.txt"
 
 echo "Validating $SYSFILE against $GOLDFILE..."
-python models/eval.py --verbose "$SYSFILE" "$GOLDFILE" 2>&1 | tee "$OUTPUT"
+python src/models/evaluate/eval.py --verbose "$SYSFILE" "$GOLDFILE" 2>&1 | tee "$OUTPUT"
 # python models/eval.py --verbose "$SYSFILE" "$GOLDFILE" > "$OUTPUT"
 
 # done
