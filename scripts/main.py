@@ -24,7 +24,7 @@ from src.data.common.postprocessing.mrg_to_conllu import mrg_to_conllu
 from src.data.downstream.postprocessing.txt2mrg import txt2mrg
 from src.data.common.preprocessing.dep2const import sentence2tree
 from src.data.common.postprocessing.deprojectivize import deprojectivize_by_path
-from src.data.common.preprocessing.projectivize import projectivize, relabel
+from src.data.common.preprocessing.projectivize import projectivize, relabel, is_non_proj
 
 
 def main():
@@ -53,8 +53,8 @@ def main():
     # combine_datasets()
     # replace_bracket_upstream_inference("Ancient_Greek", ["train", "dev", "test"])
     # common_preprocessing_pipeline(combine_langs, ["train", "dev", "test"], "UPOS")
-    # downstream_preprocessing_pipeline("English-Penn", ["test"], "UPOS", 100, is_target=True, overlap=3)
-    structured_tokens_postprocessing_pipeline(lang_name="English-Penn", pos="upos", epochs=100, gate="yes")
+    # downstream_preprocessing_pipeline("English-Penn", ["train", "dev", "test"], "UPOS", 100, is_target=True, overlap=3)
+    structured_tokens_postprocessing_pipeline(lang_name="English-Penn", pos="upos", epochs=100, gate="none")
     # downstream_preprocessing_pipeline(combine_langs, ["train", "dev", "test"], "UPOS", 100, is_target=True)
     # write_to_json(langs=combine_langs, max_weight=20)
     # preprocessing_pipeline("Ancient_Greek", ["train", "dev", "test"], "XPOS")
@@ -84,6 +84,18 @@ def main():
     #     conllu = tokenlist.serialize()
     #     with open(ROOT / "debug.output.conllu", "w", encoding="utf-8") as fout:
     #         fout.write(conllu)
+    # ------------------------------------------------------------
+
+    # --------- for finding English non projective sentence ------
+
+    # DATA = ROOT / "data" / "upstream" / "UD_French-GSD" / "fr_gsd-ud-train.conllu"
+
+    # for tokenlist, sentencedata in read_conllu(DATA):
+    #     arcs = sentencedata.arcs
+    #     if is_non_proj(arcs):
+    #         print(tokenlist.metadata["sent_id"])
+    #         print(tokenlist)
+            
     # ------------------------------------------------------------
         
     # txt2mrg(ROOT / "debug.txt", ROOT / "debug.mrg", ROOT / "debug.conllu", ROOT / "debug.output.mrg")

@@ -49,7 +49,7 @@ mkdir -p "$OUTPUT_DIR"
 # TBLOWER="${treebank,,}"
 
 # MODELNAME="lang=${dir_abbr},pos=${pos},epochs=100"
-MODELNAME="lang=${dir_abbr},pos=${pos},gate=yes"
+MODELNAME="lang=${dir_abbr},pos=${pos},gate=none"
 
 SYSFILE="predictions/${MODE}/${MODELNAME},deprojz=yes.conllu"
 GOLDFILE="data/raw/UD_${LANG}-${treebank}/${abbr}_${treebank_lower}-ud-test.conllu"
