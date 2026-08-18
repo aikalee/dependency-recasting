@@ -8,7 +8,7 @@ os.chdir(ROOT)
 sys.path.insert(0, str(ROOT))
 
 from src.data.upstream.replace_bracket import replace_bracket_upstream_inference
-from src.data.common.preprocessing.pipeline import common_preprocessing_pipeline
+from src.data.common.preprocessing.pipeline import common_preprocessing_pipeline, add_to_dev_pipeline
 from src.data.downstream.preprocessing.pipeline import downstream_preprocessing_pipeline
 from src.data.downstream.preprocessing.replace_pos import replace_pos_downstream_preprocessing
 from src.data.downstream.preprocessing.mrg2txt import mrg2txt
@@ -19,12 +19,17 @@ from src.data.downstream.postprocessing.structured_tokens_pipeline import struct
 
 # === for debugging ===
 from nltk.tree import Tree
+from conllu import parse, parse_incr
 from src.data.common.conllu_io import read_conllu, rewrite_conllu, reconstruct_conllu
 from src.data.common.postprocessing.mrg_to_conllu import mrg_to_conllu
 from src.data.downstream.postprocessing.txt2mrg import txt2mrg
 from src.data.common.preprocessing.dep2const import sentence2tree
-from src.data.common.postprocessing.deprojectivize import deprojectivize_by_path
-from src.data.common.preprocessing.projectivize import projectivize, relabel, is_non_proj
+from src.data.common.preprocessing.projectivize import projectivize, relabel
+from src.data.common.postprocessing.deprojectivize import deprojectivize_by_head, deprojectivize_by_path, deprojectivize_by_head_path
+
+# === analysis ===
+# from src.pathgen import get_upstream_conllu_path, get_projectivized_conllu_path
+from analysis.analyze import count_recovery_rate
 
 
 def main():
@@ -52,9 +57,14 @@ def main():
     combine_langs = ["Ancient_Greek", "English-EWT", "English-Penn", "Finnish", "French", "Hebrew", "Russian",  "Tamil",  "Uyghur", "Wolof"]
     # combine_datasets()
     # replace_bracket_upstream_inference("Ancient_Greek", ["train", "dev", "test"])
-    # common_preprocessing_pipeline(combine_langs, ["train", "dev", "test"], "UPOS")
+    head = True
+    path = True
+    # preprocessing -> add to dev -> preprocessing
+    # common_preprocessing_pipeline("Ancient_Greek", ["train", "dev", "test"], "UPOS", head=head, path=path)
+    # add_to_dev_pipeline("Ancient_Greek", "UPOS", head=head, path=path)
+    # postprocessing_pipeline(lang="Ancient_Greek", pos="UPOS", epochs=100, subfolder="label_experiments", head=True, path=True)
     # downstream_preprocessing_pipeline("English-Penn", ["train", "dev", "test"], "UPOS", 100, is_target=True, overlap=3)
-    structured_tokens_postprocessing_pipeline(lang_name="English-Penn", pos="upos", epochs=100, gate="none")
+    # structured_tokens_postprocessing_pipeline(lang_name="English-Penn", pos="upos", epochs=100, gate="none")
     # downstream_preprocessing_pipeline(combine_langs, ["train", "dev", "test"], "UPOS", 100, is_target=True)
     # write_to_json(langs=combine_langs, max_weight=20)
     # preprocessing_pipeline("Ancient_Greek", ["train", "dev", "test"], "XPOS")
@@ -108,6 +118,33 @@ def main():
     #     print(sentencedata.arcs)
     #     deprojz = sentence2tree(sentencedata, tokenlist)
     #     print(deprojz)
+
+    # ---------------------- for analysis --------------------------
+    # lang = "Wolof"
+    # orig_path = get_upstream_conllu_path(lang=lang, split="train")
+    # projz_path = get_projectivized_conllu_path(lang=lang, split="train")
+    # recovered = count_recovery_rate(orig_path, projz_path)
+    # print("Language:", lang, "Recovery rate:", round(recovered, 2))
+
+
+    # ------------------ deprojectivization debugging ------------------
+
+    DATA = ROOT / "debug.conllu"
+    for tokenlist, sentencedata in read_conllu(DATA):
+        arcs = sentencedata.arcs
+        deprels = sentencedata.deprels
+        dlookup = sentencedata.dlookup
+
+        projz_arcs = projectivize(arcs, symmetric_counting=True, dlookup=dlookup)
+        print(projz_arcs)
+        projz_deprels = relabel(deprels, projz_arcs, head=head, path=path)  
+        print(projz_deprels)
+        tokenlist = reconstruct_conllu(tokenlist, projz_deprels)
+        print(tokenlist)
+        # head_path_deprojz = deprojectivize_by_head(sentencedata)
+        # print(head_path_deprojz)
+    # ---------------------------------------------------------------
+
 
 
 if __name__ == "__main__":

@@ -11,12 +11,12 @@ echo "Now running in: $(pwd)"
 
 # EPOCH=("20" "100")
 
-MODE="neural"
-LANG="English"
-abbr="en"
-dir_abbr="en-penn"
-treebank="Penn"
-treebank_lower="penn"
+MODE="label_experiments"
+LANG="Ancient_Greek"
+abbr="grc"
+dir_abbr="grc"
+treebank="Perseus"
+treebank_lower="Perseus"
 pos="upos"
 
 # declare -A ud_abbr
@@ -49,7 +49,7 @@ mkdir -p "$OUTPUT_DIR"
 # TBLOWER="${treebank,,}"
 
 # MODELNAME="lang=${dir_abbr},pos=${pos},epochs=100"
-MODELNAME="lang=${dir_abbr},pos=${pos},gate=none"
+MODELNAME="lang=${dir_abbr},pos=${pos},head=yes,path=yes,epochs=100"
 
 SYSFILE="predictions/${MODE}/${MODELNAME},deprojz=yes.conllu"
 GOLDFILE="data/raw/UD_${LANG}-${treebank}/${abbr}_${treebank_lower}-ud-test.conllu"

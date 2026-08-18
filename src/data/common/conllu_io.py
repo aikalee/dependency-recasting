@@ -8,7 +8,7 @@ from itertools import product
 from typing import Optional
 
 from src.data.common.preprocessing.projectivize import is_non_proj, get_non_proj_arcs, projectivize, relabel
-from src.data.common.postprocessing.deprojectivize import deprojectivize_by_path, is_projz
+from src.data.common.postprocessing.deprojectivize import deprojectivize_by_head, deprojectivize_by_path, deprojectivize_by_head_path, is_projz
 
 
 @dataclass
@@ -124,7 +124,7 @@ def reconstruct_conllu(tokenlist, transformed_deprels):
     return tokenlist
 
 
-def rewrite_conllu(read_path, write_path, projz_mode=True, pseudo_filter=False) -> None:
+def rewrite_conllu(read_path, write_path, projz_mode=True, pseudo_filter=False, head=None, path=None) -> None:
     
     sents = read_conllu(read_path)
     desc = "Projectivizing" if projz_mode else "Deprojectivizing"
@@ -139,9 +139,10 @@ def rewrite_conllu(read_path, write_path, projz_mode=True, pseudo_filter=False) 
         dlookup = sentencedata.dlookup
 
         if projz_mode:
+        # if projz_mode and tokenlist.metadata["sent_id"] == "tlg0008.tlg001.perseus-grc1.13.tb.xml@1190":
             if is_non_proj(arcs):
                 projz_arcs = projectivize(arcs, symmetric_counting=True, dlookup=dlookup)
-                projz_deprels = relabel(deprels, projz_arcs)  
+                projz_deprels = relabel(deprels, projz_arcs, head=head, path=path)  
                 tokenlist = reconstruct_conllu(tokenlist, projz_deprels)
         
             elif pseudo_filter:
@@ -149,7 +150,17 @@ def rewrite_conllu(read_path, write_path, projz_mode=True, pseudo_filter=False) 
         
         else:
             if is_projz(deprels):
-                updated_deprels, _ = deprojectivize_by_path(sentencedata)
+                if head is not None or path is not None:
+                    if head and not path:
+                        updated_deprels = deprojectivize_by_head(sentencedata)
+                    elif not head and path:
+                        updated_deprels = deprojectivize_by_path(sentencedata)
+                    elif head and path:
+                        updated_deprels = deprojectivize_by_head_path(sentencedata)
+                    else:
+                        raise ValueError("Only head, path, head+path are allowed.")
+                else:
+                    updated_deprels, _ = deprojectivize_by_path(sentencedata)
                 tokenlist = reconstruct_conllu(tokenlist, updated_deprels)
        
         conllu = tokenlist.serialize()        

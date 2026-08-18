@@ -54,15 +54,15 @@ def get_non_proj_arcs(arcs, symmetric_counting=False, return_intersecting_arcs=F
     return non_proj_arcs
 
 def projectivize(arcs, symmetric_counting=False, dlookup=None, return_all=False, count_steps=False):
-
+    # orig_arcs = deepcopy(arcs)
     arcs = deepcopy(arcs) # no root token
     hlookup = dict(arcs)
     lifted_tokens = []
     lifted_arcs = []
-         
+    
+    
     while is_non_proj(arcs):
         non_proj_arcs = get_non_proj_arcs(arcs, symmetric_counting=symmetric_counting, dlookup=dlookup)
-        # print(non_proj_arcs)
         sorted_non_proj_arcs = sorted(list(non_proj_arcs.keys()), key=lambda x: x[0])
         smallest_distance = float('inf')
         smallest_arc = None
@@ -72,22 +72,19 @@ def projectivize(arcs, symmetric_counting=False, dlookup=None, return_all=False,
             if smallest_distance > distance and hlookup[head] != 0:
                 smallest_distance = distance
                 smallest_arc = (dep, head)
-            # else:
-
-
-                # print(f"head: {head}, dep: {dep}, distance: {distance}, smallest_distance: {smallest_distance}")
 
         smallest_dep, smallest_head = smallest_arc
         new_head = hlookup[smallest_head]
         arcs[smallest_dep-1] = (smallest_dep, new_head)
         lifted_tokens.append(smallest_dep)
-    
+
+    # To make sure only the last lift is recorded in lifted_arcs
     for token in set(lifted_tokens):
         if token == arcs[token-1][0]:
             lifted_arcs.append(arcs[token-1])
         else:
             raise ValueError("Token ids do not match.")
-    
+    # print(lifted_arcs)
     return lifted_arcs
 
 def relabel(orig_deprels, projz_arcs, head: bool = False, path: bool = True) -> dict:
@@ -96,45 +93,32 @@ def relabel(orig_deprels, projz_arcs, head: bool = False, path: bool = True) -> 
         raise ValueError("At least head or path must be True.")
     
     hlookup = dict(orig_deprels.keys())
+    new_hlookup = deepcopy(hlookup)
     projz_deprels = {}
-    changed_tokens = []
-
-    # print(projz_arcs)
 
     for d, goal_h in projz_arcs:
 
         h = hlookup[d]
         orig_deprel = orig_deprels[(d, h)]
 
-       
+        # because the parent is already lifted!!
         head_of_h = hlookup[h]
         if orig_deprels.get((h, head_of_h), None):
             parent_deprel = orig_deprels[(h, head_of_h)]
         else:
-            parent_deprel = projz_deprels[(h, head_of_h)]
+            raise ValueError(f"No parent labels for {(h, head_of_h)} found.")
         
         projz_deprel = orig_deprel + "↑"
+        
 
         if head:
             projz_deprel += parent_deprel 
 
-        projz_deprels[(d, goal_h)] = projz_deprel
-        changed_tokens.append(d) 
-        # print(projz_deprels)
-        orig_deprels.pop((d, h))
-        hlookup[d] = goal_h
-        
-
-        head_of_h = hlookup[h]
-
         if path:
-            
-            # if d not in changed_tokens:
             new_parent_deprel = parent_deprel + "↓"
             projz_deprels[(h, head_of_h)] = new_parent_deprel
-            # else:
-            #     new_parent_deprel = projz_deprels.get((d, goal_h)) + "↓"
-            #     projz_deprels[(d, goal_h)] = new_parent_deprel
-       
+
+        projz_deprels[(d, goal_h)] = projz_deprel
+        new_hlookup[d] = goal_h
 
     return projz_deprels
