@@ -118,19 +118,24 @@ class DataPaths:
             greatgrandparent = "common"
             parent = f"UD_{self.ud_lang}-{self.treebank}"
         else:
+            head = "yes" if head else "no"
+            path = "yes" if path else "no"
             greatgrandparent = "label_experiments"
             parent = f"lang={self.dir_abbr},head={head},path={path}"
         folder = DATA_DIR / greatgrandparent / "projectivized" / parent
         path = f"{self.ud_abbr}__{self.split}.conllu"
         check_dir(folder)
+        return folder / path
 
     def constituentized(self, pos, head=None, path=None) -> Path:
         if head is None and path is None:
             greatgrandparent = "common"
             parent = f"lang={self.dir_abbr},pos={pos.lower()}"
         else:
+            head = "yes" if head else "no"
+            path = "yes" if path else "no"
             greatgrandparent = "label_experiments"
-            path = f"lang={self.dir_abbr},pos={pos.lower()},head={head},path={path}"
+            parent = f"lang={self.dir_abbr},pos={pos.lower()},head={head},path={path}"
         folder = DATA_DIR / greatgrandparent / "constituentized" / parent
         path = f"{self.ud_abbr}__{self.split}.conllu"
         check_dir(folder)

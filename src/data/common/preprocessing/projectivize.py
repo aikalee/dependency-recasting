@@ -101,7 +101,6 @@ def relabel(orig_deprels, projz_arcs, head: bool = False, path: bool = True) -> 
         h = hlookup[d]
         orig_deprel = orig_deprels[(d, h)]
 
-        # because the parent is already lifted!!
         head_of_h = hlookup[h]
         if orig_deprels.get((h, head_of_h), None):
             parent_deprel = orig_deprels[(h, head_of_h)]

@@ -50,7 +50,7 @@ def common_preprocessing_pipeline(lang, split, pos, head=None, path=None):
     #         read_path = get_projectivized_conllu_path(*para, head, path)
     #         write_path = get_constituentized_mrg_path(*para, pos, head, path)
     read_path = data_paths.projectivized(head=head, path=path)
-    write_path = data_paths.constituentized(head=head, path=path)
+    write_path = data_paths.constituentized(pos=pos, head=head, path=path)
     print(f"Loading from {read_path}")
     print(f"Writing into {write_path}")
     # read_path = get_projectivized_conllu_path(*para)

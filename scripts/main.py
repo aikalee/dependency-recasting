@@ -60,7 +60,7 @@ def main():
     head = True
     path = True
     # preprocessing -> add to dev -> preprocessing
-    # common_preprocessing_pipeline("Ancient_Greek", ["train", "dev", "test"], "UPOS", head=head, path=path)
+    common_preprocessing_pipeline("Ancient_Greek", "test", "UPOS", head=head, path=path)
     # add_to_dev_pipeline("Ancient_Greek", "UPOS", head=head, path=path)
     # postprocessing_pipeline(lang="Ancient_Greek", pos="UPOS", epochs=100, subfolder="label_experiments", head=True, path=True)
     # downstream_preprocessing_pipeline("English-Penn", ["train", "dev", "test"], "UPOS", 100, is_target=True, overlap=3)
@@ -129,18 +129,18 @@ def main():
 
     # ------------------ deprojectivization debugging ------------------
 
-    DATA = ROOT / "debug.conllu"
-    for tokenlist, sentencedata in read_conllu(DATA):
-        arcs = sentencedata.arcs
-        deprels = sentencedata.deprels
-        dlookup = sentencedata.dlookup
+    # DATA = ROOT / "debug.conllu"
+    # for tokenlist, sentencedata in read_conllu(DATA):
+    #     arcs = sentencedata.arcs
+    #     deprels = sentencedata.deprels
+    #     dlookup = sentencedata.dlookup
 
-        projz_arcs = projectivize(arcs, symmetric_counting=True, dlookup=dlookup)
-        print(projz_arcs)
-        projz_deprels = relabel(deprels, projz_arcs, head=head, path=path)  
-        print(projz_deprels)
-        tokenlist = reconstruct_conllu(tokenlist, projz_deprels)
-        print(tokenlist)
+    #     projz_arcs = projectivize(arcs, symmetric_counting=True, dlookup=dlookup)
+    #     print(projz_arcs)
+    #     projz_deprels = relabel(deprels, projz_arcs, head=head, path=path)  
+    #     print(projz_deprels)
+    #     tokenlist = reconstruct_conllu(tokenlist, projz_deprels)
+    #     print(tokenlist)
         # head_path_deprojz = deprojectivize_by_head(sentencedata)
         # print(head_path_deprojz)
     # ---------------------------------------------------------------
