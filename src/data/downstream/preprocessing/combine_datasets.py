@@ -1,6 +1,7 @@
 from itertools import product
 from tqdm import tqdm
-from src.pathgen import get_linearized_txt_path,  get_combined_txt_path, get_combined_langs_txt_path
+# from src.pathgen import get_linearized_txt_path,  get_combined_txt_path, get_combined_langs_txt_path
+from src.pathgen import UpstreamPredictionPaths
 
 import json
 import numpy as np
@@ -114,10 +115,13 @@ def combine_datasets(langs=LANGUAGES, splits=SPLITS):
     
     # === build blank files ===
     for split in splits:
-
-        src_write_path = get_combined_txt_path(split, is_target=False)
-        tgt_write_path = get_combined_txt_path(split, is_target=True)
-        lang_write_path = get_combined_langs_txt_path(split)
+        write_paths = UpstreamPredictionPaths(lang="combined", pos="UPOS", split=split)
+        src_write_path = write_paths.linearized(is_target=False)
+        tgt_write_path = write_paths.linearized(is_target=True)
+        lang_write_path = write_paths.language_file()
+        # src_write_path = get_combined_txt_path(split, is_target=False)
+        # tgt_write_path = get_combined_txt_path(split, is_target=True)
+        # lang_write_path = get_combined_langs_txt_path(split)
 
         with open(src_write_path, "w", encoding="utf-8") as fsrcout, \
              open(tgt_write_path, "w", encoding="utf-8") as ftgtout, \
@@ -129,14 +133,18 @@ def combine_datasets(langs=LANGUAGES, splits=SPLITS):
         train_count = 0
         dev_count = 0
 
+        read_paths = UpstreamPredictionPaths(lang=lang, pos="UPOS", split=split)
+
         for split in splits:
-            src_path = get_linearized_txt_path(lang=lang, pos="upos", split=split, is_target=False)
-            tgt_path = get_linearized_txt_path(lang=lang, pos="upos", split=split, is_target=True)
+            src_path = read_paths.linearized(is_target=False)
+            tgt_path = read_paths.linearized(is_target=True)
+            # src_path = get_linearized_txt_path(lang=lang, pos="upos", split=split, is_target=False)
+            # tgt_path = get_linearized_txt_path(lang=lang, pos="upos", split=split, is_target=True)
             print(f"Loading from {src_path} and {tgt_path}...")
 
-            src_write_path = get_combined_txt_path(split, is_target=False)
-            tgt_write_path = get_combined_txt_path(split, is_target=True)
-            lang_write_path = get_combined_langs_txt_path(split)
+            # src_write_path = get_combined_txt_path(split, is_target=False)
+            # tgt_write_path = get_combined_txt_path(split, is_target=True)
+            # lang_write_path = get_combined_langs_txt_path(split)
 
            
             if split == "train":

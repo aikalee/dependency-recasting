@@ -3,7 +3,8 @@ import torch
 from tqdm import tqdm
 from collections import Counter
 from src.data.downstream.preprocessing.combine_datasets import LANGUAGES
-from src.pathgen import DIR_ABBR_LOOKUP, get_edit_actions_json_path, get_structured_tokens_json_path, get_vocab_dir
+from src.pathgen import BASE_DIR, DIR_ABBR_LOOKUP, UpstreamPredictionPaths
+# from src.pathgen import DIR_ABBR_LOOKUP, get_edit_actions_json_path, get_structured_tokens_json_path, get_vocab_dir
 
 def read_jsonl(path):
     with open(path, "r", encoding="utf-8") as fin:
@@ -18,6 +19,8 @@ PAD_ID = 0
 BOS_ID = 1
 EOS_ID = 2
 LABEL_OFFSET = 3
+
+VOCAB_DIR = BASE_DIR / "artifacts" 
 
 
 # def build_token_vocab(examples, min_freq=1):
@@ -87,7 +90,9 @@ def get_all_exapmles(langs):
 
     for lang in tqdm(langs, desc="Getting examples from all languages"):
         for split in ["train", "dev"]:
-            file_path = get_structured_tokens_json_path(lang, pos="upos", split=split)
+            upstream_prediction_paths = UpstreamPredictionPaths(lang=lang, pos="UPOS", split=split)
+            file_path = upstream_prediction_paths.structured_tokens(overlap=0)
+            # file_path = get_structured_tokens_json_path(lang, pos="upos", split=split)
             all_examples.extend(read_jsonl(file_path))
 
     return all_examples
@@ -189,7 +194,7 @@ def build_decoder_vocab(examples):
     return decoder2id, id2decoder
 
 
-def build_vocabs_from_datasets(langs, save_dir=get_vocab_dir()):
+def build_vocabs_from_datasets(langs, save_dir=VOCAB_DIR):
     all_examples = get_all_exapmles(langs)
 
     lang2id, id2lang = build_lang_vocab(LANGUAGES)
@@ -329,7 +334,7 @@ def build_global_class_weight(examples,  max_weight: float = 10.0):
     return {"global_class_weight": weight_list}
 
 
-def write_to_json(langs, max_weight=10, save_dir=get_vocab_dir()):
+def write_to_json(langs, max_weight=10, save_dir=VOCAB_DIR):
     all_examples = get_all_exapmles(langs)
     vocab_dict = build_vocabs_from_datasets(langs)
     # replace_weights = build_replace_class_weight(langs)
