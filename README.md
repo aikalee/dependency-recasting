@@ -13,7 +13,7 @@ For evaluation, the outputs are deprojectivized back to the original non-project
 1. Data preprocessing for upstream model training (projectivization and conllu-to-tree conversion)
 ```
 # main.py
-common_preprocessing_pipeline("English", ["train", "dev', "test"], pos="UPOS")
+common_preprocessing_pipeline("English", split="train", pos="UPOS", head=None, path=None, labels_aligned=False)
 ```
 2. Data preprocessing for downstream model training (linearization)
 ```
@@ -27,11 +27,11 @@ postprocessing_pipeline("English", pos="upos", epochs=100, is_neural=True)
 ```
 4. Upstream model training
 ```
-# models/train_stanza.sh
+# src/models/stanza/train_stanza.sh
 ```
 5. Upstream model inference
 ```
-# models/run_stanza.py
+# src/models/stanza/run_stanza.py
 ```
 5. Downstream mdoel training
 ```
