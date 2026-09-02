@@ -9,7 +9,7 @@ from src.data.common.preprocessing.add_examples import add_examples
 def ensure_list(arg):
     return arg if isinstance(arg, list) else [arg]
 
-def common_preprocessing_pipeline(lang, split, pos, head=None, path=None):
+def common_preprocessing_pipeline(lang, split, pos, head=None, path=None, labels_aligned=True):
     """
     The workflow of the pipeline:
     -> Non-projective sentences in UD CoNLL-U format 
@@ -29,15 +29,16 @@ def common_preprocessing_pipeline(lang, split, pos, head=None, path=None):
     
     # for para in paras:
     # if head is not None or path is not None:
-        
-    read_path = data_paths.raw()
-    write_path = data_paths.projectivized(head=head, path=path)
-   
-        # read_path = get_raw_conllu_path(*para)
-        # write_path = get_projectivized_conllu_path(*para)
-    print(f"Loading from {read_path}")
-    print(f"Writing into {write_path}")
-    rewrite_conllu(read_path, write_path, projz_mode=True, head=head, path=path)
+    
+    if not labels_aligned:
+        read_path = data_paths.raw()
+        write_path = data_paths.projectivized(head=head, path=path)
+    
+            # read_path = get_raw_conllu_path(*para)
+            # write_path = get_projectivized_conllu_path(*para)
+        print(f"Loading from {read_path}")
+        print(f"Writing into {write_path}")
+        rewrite_conllu(read_path, write_path, projz_mode=True, head=head, path=path)
 
     # === Tree conversion ===
     # para_1 = list(product(lang_name, split_name, pos))
@@ -57,17 +58,18 @@ def common_preprocessing_pipeline(lang, split, pos, head=None, path=None):
     # read_path, write_path = get_dep2const_file_path(*para)
     conllu_to_mrg(read_path, write_path, pos)
 
-def add_to_dev_pipeline(lang, pos, head=None, path=None):
-    lang_name = ensure_list(lang_name)
+def balance_label_coverage(lang, pos, head=None, path=None):
+   
    
     # for lang in lang_name:
     train_data_paths = DataPaths(lang=lang, split="train")
     dev_data_paths = DataPaths(lang=lang, split="dev")
     train_path = train_data_paths.projectivized(head=head, path=path)
     dev_path = dev_data_paths.projectivized(head=head, path=path)
+    print(f"Reading and writing into {train_path} and {dev_path}....")
 
-    train_record_path = train_data_paths.records()
-    dev_record_path = dev_data_paths.records()
+    train_record_path = train_data_paths.records(head=head, path=path)
+    dev_record_path = dev_data_paths.records(head=head, path=path)
 
     # train_path = get_projectivized_label_path(lang, "train", head, path)
     # dev_path = get_projectivized_label_path(lang, "dev", head, path)

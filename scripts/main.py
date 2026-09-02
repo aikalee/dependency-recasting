@@ -8,7 +8,7 @@ os.chdir(ROOT)
 sys.path.insert(0, str(ROOT))
 
 from src.data.upstream.replace_bracket import replace_bracket_upstream_inference
-from src.data.common.preprocessing.pipeline import common_preprocessing_pipeline, add_to_dev_pipeline
+from src.data.common.preprocessing.pipeline import common_preprocessing_pipeline, balance_label_coverage
 from src.data.downstream.preprocessing.pipeline import downstream_preprocessing_pipeline
 from src.data.downstream.preprocessing.replace_pos import replace_pos_downstream_preprocessing
 from src.data.downstream.preprocessing.mrg2txt import mrg2txt
@@ -28,8 +28,8 @@ from src.data.common.preprocessing.projectivize import projectivize, relabel
 from src.data.common.postprocessing.deprojectivize import deprojectivize_by_head, deprojectivize_by_path, deprojectivize_by_head_path
 
 # === analysis ===
-# from src.pathgen import get_upstream_conllu_path, get_projectivized_conllu_path
-from analysis.analyze import count_recovery_rate
+from src.pathgen import DataPaths
+from analysis.analyze import count_recovery_rate, validate_all_labels
 
 
 def main():
@@ -58,11 +58,12 @@ def main():
     # combine_datasets()
     # replace_bracket_upstream_inference("Ancient_Greek", ["train", "dev", "test"])
     head = True
-    path = True
-    # preprocessing -> add to dev -> preprocessing
-    common_preprocessing_pipeline("Ancient_Greek", "test", "UPOS", head=head, path=path)
-    # add_to_dev_pipeline("Ancient_Greek", "UPOS", head=head, path=path)
-    # postprocessing_pipeline(lang="Ancient_Greek", pos="UPOS", epochs=100, subfolder="label_experiments", head=True, path=True)
+    path = False
+    # preprocessing -> add to dev -> preprocessing (with labels_aligned=True)
+    for split in ["train", "dev", "test"]:
+        common_preprocessing_pipeline("Ancient_Greek", split, "UPOS", head=head, path=path, labels_aligned=True)
+    # balance_label_coverage("Ancient_Greek", "UPOS", head=head, path=path)
+    # postprocessing_pipeline(lang="Ancient_Greek", pos="UPOS", epochs=100, subfolder="label_experiments", head=head, path=path)
     # downstream_preprocessing_pipeline("English-Penn", ["train", "dev", "test"], "UPOS", 100, is_target=True, overlap=3)
     # structured_tokens_postprocessing_pipeline(lang_name="English-Penn", pos="upos", epochs=100, gate="none")
     # downstream_preprocessing_pipeline(combine_langs, ["train", "dev", "test"], "UPOS", 100, is_target=True)
@@ -119,12 +120,18 @@ def main():
     #     deprojz = sentence2tree(sentencedata, tokenlist)
     #     print(deprojz)
 
-    # ---------------------- for analysis --------------------------
+    # -------------- for recovery rate analysis -------------------
     # lang = "Wolof"
     # orig_path = get_upstream_conllu_path(lang=lang, split="train")
     # projz_path = get_projectivized_conllu_path(lang=lang, split="train")
     # recovered = count_recovery_rate(orig_path, projz_path)
     # print("Language:", lang, "Recovery rate:", round(recovered, 2))
+
+    # ------------------- for label analysis ------------------------
+    # data_paths = DataPaths(lang="Ancient_Greek", split="train")
+    # train_path = data_paths.constituentized(pos="upos", head=True, path=True)
+    # validate_all_labels(train_path)
+
 
 
     # ------------------ deprojectivization debugging ------------------

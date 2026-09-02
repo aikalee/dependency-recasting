@@ -73,6 +73,8 @@ def postprocessing_pipeline(lang, pos="XPOS", epochs=20, subfolder="label_experi
     read_orig_path = data_paths.raw()
     write_path = final_prediction_paths.conllu(subfolder=subfolder)
     read_tree_path = final_prediction_paths.delinearized() if subfolder == "neural" else final_prediction_paths.constituentized()
+    print(f"Reading from {read_orig_path} and {read_tree_path}...")
+    print(f"Writing into {write_path}...")
     mrg_to_conllu(lang, read_tree_path, read_orig_path, write_path)
 
     # === Deprojectivization ===
@@ -83,6 +85,8 @@ def postprocessing_pipeline(lang, pos="XPOS", epochs=20, subfolder="label_experi
     # read_path = final_prediction_paths.delinearized() if subfolder == "neural" else final_prediction_paths.constituentized(head=head, path=path)
     read_path = final_prediction_paths.conllu(subfolder=subfolder)
     write_path = final_prediction_paths.deprojectivized(subfolder="label_experiments")
+    print(f"Reading from {read_path}...")
+    print(f"Writing into {write_path}...")
     restore_arcs_count = rewrite_conllu(read_path, write_path, projz_mode=False, pseudo_filter=False, head=head, path=path)
 
 

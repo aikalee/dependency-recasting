@@ -137,13 +137,15 @@ class DataPaths:
             greatgrandparent = "label_experiments"
             parent = f"lang={self.dir_abbr},pos={pos.lower()},head={head},path={path}"
         folder = DATA_DIR / greatgrandparent / "constituentized" / parent
-        path = f"{self.ud_abbr}__{self.split}.conllu"
+        path = f"{self.ud_abbr}__{self.split}.mrg"
         check_dir(folder)
         return folder / path
 
     def records(self, head, path) -> Path:
+        head = "yes" if head else "no"
+        path = "yes" if path else "no"
         folder = DATA_DIR / "label_experiments" / "projectivized" / f"lang={self.dir_abbr},head={head},path={path}"
-        path = f"sentence_added_to_{self.split}.conllu"
+        path = f"sentences_added_to_{self.split}.conllu"
         return folder / path
 
 @dataclass

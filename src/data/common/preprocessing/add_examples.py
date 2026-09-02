@@ -16,7 +16,7 @@ def add_examples(train_file, dev_file, train_recording_file, dev_recording_file)
             all_dev_labels.append(token["deprel"])
                 
     # with open(train_file, "r", encoding="utf-8") as ftrain:
-    for tokenlist, sentencedata in tqdm(read_conllu(dev_file), desc="Adding to dev"):
+    for tokenlist, sentencedata in tqdm(read_conllu(dev_file), desc="Adding to train"):
         flag = False
         for token in tokenlist:
             if not token["deprel"] in all_train_labels:
