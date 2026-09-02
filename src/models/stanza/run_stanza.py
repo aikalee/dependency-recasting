@@ -11,11 +11,13 @@ from stanza.models.common.pretrain import Pretrain
 from stanza.models.pos.trainer import Trainer as POSTrainer
 from stanza.models.constituency.trainer import Trainer as ConstTrainer
 
+from pathlib import Path
 from tqdm import tqdm
 
 def write_to_file(predicted_trees, output_path):
-    
+
         # === Create/clear output file ===
+        Path(output_path).parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, "w", encoding="utf-8") as fout:
             for pred in predicted_trees:
                 tree = pred.predictions[0].tree
@@ -24,7 +26,7 @@ def write_to_file(predicted_trees, output_path):
     
         print(f"Done! Predictions written to {output_path}")
 
-def retag_pipeline(input_path, output_path, pos_model_file, pretrain_file, forward, backward, const_model_file):
+def retag_pipeline(input_path, output_path, pos_model_file, pretrain_file, forward_charlm_file, backward_charlm_file, const_model_file):
 
     def build_sentences(input_path):
 
@@ -45,15 +47,15 @@ def retag_pipeline(input_path, output_path, pos_model_file, pretrain_file, forwa
 
         return sentences
     
-    def model_init(pos_model_file, pretrain, forward, backward, const_model_file):
+    def model_init(pos_model_file, pretrain, forward_charlm_file, backward_charlm_file, const_model_file):
         
         pos_trainer = POSTrainer(
             model_file=pos_model_file,     # this triggers automatic loading
             pretrain=pretrain,
             args={
                 "device": "cuda",
-                "charlm_forward_file": forward,
-                "charlm_backward_file": backward,
+                "charlm_forward_file": forward_charlm_file,
+                "charlm_backward_file": backward_charlm_file,
             },
             device="cuda"
             )
@@ -106,7 +108,7 @@ def retag_pipeline(input_path, output_path, pos_model_file, pretrain_file, forwa
         return predicted_trees
 
     pretrain = Pretrain(pretrain_file)
-    pos_trainer, const_model = model_init(pos_model_file, pretrain, forward, backward, const_model_file)
+    pos_trainer, const_model = model_init(pos_model_file, pretrain, forward_charlm_file, backward_charlm_file, const_model_file)
     doc, loader = preprocess(input_path, pretrain, pos_trainer)
     predicted_trees = parse_sentences(doc, loader, pos_trainer, const_model)
     write_to_file(predicted_trees, output_path)
@@ -153,52 +155,82 @@ def main():
     UD_ABBR_LOOKUP = {
         "Ancient_Greek": "grc",
         "Chinese": "zh",
-        "Czech": "cs",
-        "Dutch": "nl",
-        "English": "en",   
-        "Polish": "pl",
-        "Russian": "ru"
+        "English-Penn": "en",
+        "English-EWT": "en",
+        "Finnish": "fi",
+        "French": "fr",
+        "Hebrew": "he",
+        "Russian": "ru",
+        "Tamil": "ta",
+        "Uyghur": "ug",
+        "Wolof": "wo"
         }
     
-    PTB_ABBR_LOOKUP = {
+    STNZ_ABBR_LOOKUP = {
         "Ancient_Greek": "grc",
         "Chinese": "zh-hans",
-        "Czech": "cs",
-        "Dutch": "nl",
-        "English": "en",   
-        "Polish": "pl",
-        "Russian": "ru"
+        "English-Penn": "en",
+        "English-EWT": "en",
+        "Finnish": "fi",
+        "French": "fr",
+        "Hebrew": "he",
+        "Russian": "ru",
+        "Tamil": "ta",
+        "Uyghur": "ug",
+        "Wolof": "wo"
         }
     
     TREEBANK_LOOKUP = {
         "Ancient_Greek": "Perseus",
         "Chinese": "Penn",
-        "Czech": "PDT",
-        "Dutch": "Alpino",
-        "English": "Penn",
-        "Polish": "LFG",
-        "Russian": "SynTagRus"
+        "English-Penn": "Penn",
+        "English-EWT": "EWT",
+        "Finnish": "TDT",
+        "French": "GSD",
+        "Hebrew": "HTB",
+        "Russian": "GSD",
+        "Tamil": "TTB",
+        "Uyghur": "UDT",
+        "Wolof": "WTB"
         }
+
     
-    LANG = "English"
-    POS = "xpos"
-    EPOCHS = 100
-    UD_ABBR = UD_ABBR_LOOKUP[LANG]
-    PTB_ABBR = PTB_ABBR_LOOKUP[LANG]
-    TREEBANK = TREEBANK_LOOKUP[LANG]
-    INPUT_FILE = f"/root/autodl-tmp/recasting/data/{UD_ABBR}_{TREEBANK.lower()}-ud-test.conllu"
+    lang = "Ancient_Greek"
+    pos = "upos"
+    epochs = 100
+    head = "no"
+    path = "yes"
+    label = f",head={head},path={path}"
+    retag = False
+    # charlm = False
+    ud_abbr = UD_ABBR_LOOKUP[lang]
+    stnz_abbr = STNZ_ABBR_LOOKUP[lang]
+    treebank = TREEBANK_LOOKUP[lang]
+    input_file = f"/root/autodl-tmp/recasting/data/upstream_inference/{ud_abbr}_{treebank.lower()}-ud-test.conllu"
+
+
+    pretrain_dir = f"/root/autodl-tmp/stanza_resources/{stnz_abbr}/pretrain/"
+    pretrain_dir = list(Path(pretrain_dir).glob("*.pt"))[0]
+
+    if retag:
+        pos_model_dir = f"/root/autodl-tmp/stanza_resources/{stnz_abbr}/pos/"
+        pos_model = list(Path(pos_model_dir).glob("*.pt"))[0]
+
+    # if charlm:
+        forward_charlm_dir = f"/root/autodl-tmp/stanza_resources/{stnz_abbr}/forward_charlm/"
+        backward_charlm_dir = f"/root/autodl-tmp/stanza_resources/{stnz_abbr}/backward_charlm/"
+        forward_charlm = list(Path(forward_charlm_dir).glob("*.pt"))[0]
+        backward_charlm = list(Path(backward_charlm_dir).glob("*.pt"))[0]
+    
+    # pos_model = f"/root/autodl-tmp/stanza_resources/{stnz_abbr}/pos/combined_charlm.pt"
+    # pretrain_file = f"/root/autodl-tmp/stanza_resources/{stnz_abbr}/pretrain/conll17.pt"
+    # forward_charlm_file = f"/root/autodl-tmp/stanza_resources/{stnz_abbr}/forward_charlm/1billion.pt"
+    # backward_charlm_file = f"/root/autodl-tmp/stanza_resources/{stnz_abbr}/backward_charlm/1billion.pt"
    
- 
-    POS_MODEL = f"/root/autodl-tmp/stanza_resources/{PTB_ABBR}/pos/combined_charlm.pt"
-    PRETRAIN_FILE = f"/root/autodl-tmp/stanza_resources/{PTB_ABBR}/pretrain/conll17.pt"
-    FORWARD_CHARLM_FILE = f"/root/autodl-tmp/stanza_resources/{PTB_ABBR}/forward_charlm/1billion.pt"
-    BACKWARD_CHARLM_FILE = f"/root/autodl-tmp/stanza_resources/{PTB_ABBR}/backward_charlm/1billion.pt"
-   
-    # for EP in ["100"]:
-    MODELNAME = f"lang={PTB_ABBR},pos={POS},epochs={EPOCHS}"
-    CONST_MODEL = f"/root/autodl-tmp/recasting/stanza-models/{MODELNAME}/{PTB_ABBR}_transformer_finetuned_constituency_checkpoint.pt"
-    OUTPUT_FILE = f"/root/autodl-tmp/recasting/predictions/stanza/{MODELNAME}.mrg"
-    no_retag_pipeline(INPUT_FILE, OUTPUT_FILE, CONST_MODEL, POS)
+    model_name = f"lang={stnz_abbr},pos={pos}{label},epochs={epochs}"
+    const_model = f"/root/autodl-tmp/recasting/stanza-models/{model_name}/{stnz_abbr}_transformer_finetuned_constituency_checkpoint.pt"
+    output_file = f"/root/autodl-tmp/recasting/predictions/stanza/{model_name}.mrg"
+    no_retag_pipeline(input_file, output_file, const_model, pos)
 
 if __name__ == "__main__":
     main()
