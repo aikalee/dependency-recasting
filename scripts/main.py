@@ -60,10 +60,10 @@ def main():
     head = True
     path = False
     # preprocessing -> add to dev -> preprocessing (with labels_aligned=True)
-    for split in ["train", "dev", "test"]:
-        common_preprocessing_pipeline("Ancient_Greek", split, "UPOS", head=head, path=path, labels_aligned=True)
+    # for split in ["train", "dev", "test"]:
+    #     common_preprocessing_pipeline("Ancient_Greek", split, "UPOS", head=head, path=path, labels_aligned=True)
     # balance_label_coverage("Ancient_Greek", "UPOS", head=head, path=path)
-    # postprocessing_pipeline(lang="Ancient_Greek", pos="UPOS", epochs=100, subfolder="label_experiments", head=head, path=path)
+    postprocessing_pipeline(lang="Ancient_Greek", pos="UPOS", epochs=100, subfolder="label_experiments", head=head, path=path)
     # downstream_preprocessing_pipeline("English-Penn", ["train", "dev", "test"], "UPOS", 100, is_target=True, overlap=3)
     # structured_tokens_postprocessing_pipeline(lang_name="English-Penn", pos="upos", epochs=100, gate="none")
     # downstream_preprocessing_pipeline(combine_langs, ["train", "dev", "test"], "UPOS", 100, is_target=True)

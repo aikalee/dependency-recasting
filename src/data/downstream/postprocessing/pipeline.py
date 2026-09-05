@@ -1,7 +1,7 @@
 from itertools import product
 from src.pathgen import get_txt2mrg_file_path, get_const2dep_file_path, get_deprojz_file_path
 from src.data.common.conllu_io import rewrite_conllu
-from src.data.common.postprocessing.mrg_to_conllu import mrg_to_conllux
+from src.data.common.postprocessing.mrg_to_conllu import mrg_to_conllu
 from src.data.downstream.postprocessing.txt2mrg import txt2mrg
 from src.data.downstream.postprocessing.json2txt import json2txt
 

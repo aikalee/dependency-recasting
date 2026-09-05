@@ -257,7 +257,7 @@ class FinalPredictionPaths:
             subfolder = "label_experiments"
             head = "yes" if self.head else "no"
             path = "yes" if self.path else "no"
-            path = f"lang={self.dir_abbr},split=test,pos={self.pos.lower()},head={head},path={path},epochs={self.epochs}.mrg"
+            path = f"lang={self.dir_abbr},pos={self.pos.lower()},head={head},path={path},epochs={self.epochs}.mrg"
         else:
             subfolder = "raw"
             path = f"lang={self.dir_abbr},split=test,pos={self.pos.lower()},epochs={self.epochs}.mrg"
