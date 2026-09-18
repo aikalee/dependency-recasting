@@ -205,10 +205,14 @@ class UpstreamPredictionPaths:
 class FinalPredictionPaths:
     lang: str
     pos: str
+    subfolder: str 
     epochs: int = None
     gate: bool = None
     head: bool = None
     path: bool = None
+
+    def __post_init__(self):
+        self.check_subfolder()
 
     @property
     def ud_lang(self):
@@ -248,51 +252,46 @@ class FinalPredictionPaths:
             raise ValueError("Either gate or epochs must not be None.")
         return path
 
-    def check_subfolder(self, subfolder):
-        if subfolder not in ["neural", "rule_based", "label_experiments"]:
-            raise ValueError("Must be 'neural', 'rule_based' or 'label_experiments'.")
+    def check_subfolder(self):
+        if self.subfolder not in ["linearized", "structured_tokens", "rule_based", "label_experiments"]:
+            raise ValueError("Must be 'linearized', 'structured_tokens', 'rule_based' or 'label_experiments'.")
 
     def constituentized(self) -> Path:
         if self.head is not None or self.path is not None:
             subfolder = "label_experiments"
             head = "yes" if self.head else "no"
             path = "yes" if self.path else "no"
-            path = f"lang={self.dir_abbr},split=test,pos={self.pos.lower()},head={head},path={path},epochs={self.epochs}.mrg"
+            path = f"lang={self.dir_abbr},pos={self.pos.lower()},head={head},path={path},epochs={self.epochs}.mrg"
         else:
             subfolder = "raw"
             path = f"lang={self.dir_abbr},split=test,pos={self.pos.lower()},epochs={self.epochs}.mrg"
         folder = PREDICTION_DIR / subfolder
-        # path = f"lang={self.dir_abbr},split=test,pos={self.pos.lower()},epochs={self.epochs}.mrg"
         check_dir(folder)
         return folder / path
     
     def structured_tokens(self) -> Path:
-        folder = PREDICTION_DIR / "neural"
+        folder = PREDICTION_DIR / "structured_tokens"
         path = f"lang={self.dir_abbr},pos={self.pos.lower()},gate={self.gate}.json"
         return folder / path
 
     def linearized(self) -> Path:
-        folder = PREDICTION_DIR / "neural"
+        folder = PREDICTION_DIR / self.subfolder
         path = self.get_path_name("txt")
         return folder / path
 
     def delinearized(self) -> Path:
-        folder = PREDICTION_DIR / "neural"
+        folder = PREDICTION_DIR / self.subfolder
         path = self.get_path_name("mrg")
         check_dir(folder)
         return folder / path
 
-    def conllu(self, subfolder: str) -> Path:
-        # subfolder = "neural" if is_neural else "rule_based"
-        self.check_subfolder(subfolder)
-        folder = PREDICTION_DIR / subfolder
+    def conllu(self) -> Path:
+        folder = PREDICTION_DIR / self.subfolder
         path = self.get_path_name("conllu")
         return folder / path
 
-    def deprojectivized(self, subfolder: str):
-        # subfolder = "neural" if is_neural else "rule_based"
-        self.check_subfolder(subfolder)
-        folder = PREDICTION_DIR / subfolder
+    def deprojectivized(self):
+        folder = PREDICTION_DIR / self.subfolder
         path = self.get_path_name("conllu", True)
         return folder / path
 

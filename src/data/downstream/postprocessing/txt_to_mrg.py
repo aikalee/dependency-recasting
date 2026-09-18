@@ -9,7 +9,7 @@ def count_linearized(linearized):
 def count_source(source):
     return len(Tree.fromstring(source).leaves()) 
 
-def txt2mrg(read_linearized_path, read_source_path, read_orig_path, write_path):
+def txt_to_mrg(read_linearized_path, read_source_path, read_orig_path, write_path):
     sent_id = 1
     count_illformed = 0
     with open(write_path, "w", encoding="utf-8") as fout:

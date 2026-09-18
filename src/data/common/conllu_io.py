@@ -40,6 +40,7 @@ def init_sentencedata(deprels):
     stack = deque()
     # parent_stack = deque()
 
+
     for k, v in deprels.items():
             d, h = k
             dlookup[h] += [d] 
@@ -84,6 +85,7 @@ def read_conllu(file_path):
                     tokens.append(token)
 
             # no_mwt_tokenlist = TokenList(tokens, metadata=tokenlist.metadata)
+            
             sentencedata = init_sentencedata(deprels)
             
                 
@@ -139,7 +141,6 @@ def rewrite_conllu(read_path, write_path, projz_mode=True, pseudo_filter=False, 
         dlookup = sentencedata.dlookup
 
         if projz_mode:
-        # if projz_mode and tokenlist.metadata["sent_id"] == "tlg0008.tlg001.perseus-grc1.13.tb.xml@1190":
             if is_non_proj(arcs):
                 projz_arcs = projectivize(arcs, symmetric_counting=True, dlookup=dlookup)
                 projz_deprels = relabel(deprels, projz_arcs, head=head, path=path)  
@@ -149,20 +150,22 @@ def rewrite_conllu(read_path, write_path, projz_mode=True, pseudo_filter=False, 
                 continue
         
         else:
+            # if is_projz(deprels) and tokenlist.metadata["sent_id"] == "tlg0008.tlg001.perseus-grc1.12.tb.xml@537":
             if is_projz(deprels):
                 if head is not None or path is not None:
                     if head and not path:
                         updated_deprels = deprojectivize_by_head(sentencedata)
                     elif not head and path:
-                        updated_deprels = deprojectivize_by_path(sentencedata)
+                        updated_deprels, _ = deprojectivize_by_path(sentencedata)
                     elif head and path:
-                        updated_deprels = deprojectivize_by_head_path(sentencedata)
+                        updated_deprels, _ = deprojectivize_by_head_path(sentencedata)
                     else:
                         raise ValueError("Only head, path, head+path are allowed.")
                 else:
                     updated_deprels, _ = deprojectivize_by_path(sentencedata)
                 tokenlist = reconstruct_conllu(tokenlist, updated_deprels)
-       
+
+            # break
         conllu = tokenlist.serialize()        
 
         try:

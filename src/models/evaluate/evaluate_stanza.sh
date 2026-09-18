@@ -47,9 +47,8 @@ mkdir -p "$OUTPUT_DIR"
     
 # lowercase the treebank name (Penn → penn)
 # TBLOWER="${treebank,,}"
-
 # MODELNAME="lang=${dir_abbr},pos=${pos},epochs=100"
-MODELNAME="lang=${dir_abbr},pos=${pos},head=yes,path=yes,epochs=100"
+MODELNAME="lang=${dir_abbr},pos=${pos},head=yes,path=no,epochs=100"
 
 SYSFILE="predictions/${MODE}/${MODELNAME},deprojz=yes.conllu"
 GOLDFILE="data/raw/UD_${LANG}-${treebank}/${abbr}_${treebank_lower}-ud-test.conllu"
