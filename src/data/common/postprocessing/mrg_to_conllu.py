@@ -4,6 +4,9 @@ from tqdm import tqdm
 
 from src.data.common.postprocessing.const2dep import tree2sentence
 
+class NotParsedError(Exception):
+    pass
+
 def mrg_to_conllu(lang, read_tree_path, read_conllu_path, write_path):
     illformed_count = 0
     total_count = 0
@@ -23,14 +26,21 @@ def mrg_to_conllu(lang, read_tree_path, read_conllu_path, write_path):
             #     tokenlist[idx]["deprel"] = token["deprel"] 
             
             for idx, orig in enumerate(tokenlist):
+                updated = False
                 tokenlist[idx]["head"] = "_"                    # make sure all tokens without predictions are blank
                 tokenlist[idx]["deprel"] = "_"
 
                 for upd in tokens:
+                    # if tokenlist.metadata["sent_id"] == "tlg0008.tlg001.perseus-grc1.12.tb.xml@200":
+                    #     if upd["id"] == 2:
+                    #         print(upd)
                     if orig["id"] == upd["id"]:
+                        updated = True
                         tokenlist[idx]["head"] = upd["head"]
                         tokenlist[idx]["deprel"] = upd["deprel"]
                         break
+                if not updated:
+                    raise NotParsedError(f"The arc not parsed at sentence #{tokenlist.metadata["sent_id"]} token #{idx}")
                
                     
 

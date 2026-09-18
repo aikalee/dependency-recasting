@@ -1,7 +1,7 @@
 from src.data.downstream.preprocessing.linearize import linearize
 from tqdm import tqdm
 
-def mrg2txt(read_path, write_path, add_bos=False):
+def mrg_to_txt(read_path, write_path, add_bos=False):
     with open(write_path, "w", encoding="utf-8") as fout:
         pass
 
