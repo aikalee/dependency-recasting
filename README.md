@@ -142,12 +142,12 @@ The structured token format was developed based on the linearized representation
 scripts/main.py
 common_preprocessing_pipeline(lang="Ancient_Greek", split="train", pos="UPOS", head=None, path=None, labels_aligned=False)
 ```
-2. Data preprocessing for downstream model training (linearization)
+2. Data preprocessing for downstream model training (linearization, linearized-to-structured tokens conversion)
 ```
 scripts/main.py
 downstream_preprocessing_pipeline(lang="Ancient_Greek", split="train", pos="XPOS", epochs=20, overlap=0, is_target=False)
 ```
-3. Data postprocessing (delinearization and replacement with source data [enabled with the option `is_neural=True`], tree-to-conllu conversion, deprojectivization)
+3. Data postprocessing (structured tokens-to-linearized conversion, delinearization, tree-to-conllu conversion, deprojectivization)
 ```
 scripts/main.py
 postprocessing_pipeline(lang="Ancient_Greek", pos="UPOS", epochs=100, subfolder="label_experiments", head=head, path=path)
