@@ -9,6 +9,14 @@ $\mathcal{D} \mapsto \mathcal{L}$ and $\mathcal{D}^\prime \mapsto \mathcal{L}^\p
 
 For evaluation, the outputs are deprojectivized back to the original non-projective UD structures, and scores are reported in the original UD space.
 
+## Flowchart
+<img width="300" alt="upsteam-preprocessing" src="https://github.com/user-attachments/assets/d000b637-b775-4ab3-b16d-f3c5951c6447" /> \
+Figure 1. \
+<img width="300" alt="upstream-postprocessing" src="https://github.com/user-attachments/assets/f0571747-5fcc-436a-ad7e-67ccacfc83af" /> \
+Figure 2. \
+<img width="300" alt="custom-model-processing" src="https://github.com/user-attachments/assets/dc6ba552-dbd7-4cd8-b8ee-c6cdc144dcbd" /> \
+Figure 3. 
+
 ## Quick Start
 1. Data preprocessing for upstream model training (projectivization and conllu-to-tree conversion)
 ```
