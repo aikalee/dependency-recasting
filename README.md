@@ -1,5 +1,5 @@
 ## Overview
-This project aims to convert non-projective sentences into pseudo-projective tree representations, making them compatible with parsing models that have linear inference complexity. Traditionally, parsing non-projective sentences requires algorithms with higher computational complexity, such as the $(O(n^3))$ MST parser. With the proposed data representation, however, these sentences can be parsed in $(O(n))$ time.
+This project aims to convert non-projective sentences into pseudo-projective tree representations, making them compatible with parsing models that have linear inference complexity. Traditionally, parsing non-projective sentences requires algorithms with higher computational complexity, such as the $(O(n^3))$ MST parser. With the proposed data representation, however, these sentences can be parsed in $(O(n))$ time. The main innovation is the observation that a sentence can be converted into a tree representation only if it is projective or pseudo-projective. Therefore, projectivization must take place before the conversion to trees (constituentization).
 
 ## Workflow
 ### Flowcharts of the workflow
@@ -23,7 +23,7 @@ $\mathcal{D} \mapsto \mathcal{L}$ and $\mathcal{D}^\prime \mapsto \mathcal{L}^\p
 For evaluation, the outputs are deprojectivized back to the original non-projective UD structures, and scores are reported in the original UD space.
 
 ## Data Formats
-The main innovation is the observation that a sentence can be converted into a tree representation only if it is projective or pseudo-projective. Therefore, projectivization must take place before the conversion to trees (constituentization).
+
 ### [CoNLL-U] Raw CoNLL-U
 ```
 # sent_id = tlg0008.tlg001.perseus-grc1.13.tb.xml@1207
@@ -39,6 +39,7 @@ The main innovation is the observation that a sentence can be converted into a t
 
 
 ### [CoNLL-U] Pseudo-projective CoNLL-U
+We experimented with the Head+Path, Head, and Path labeling schemes proposed by Nivre and Nilsson (2005). Unlike their experiments, which used deterministic models, we use neural models. Head+Path retains the most information and therefore performs best with deterministic models, whereas Path has the smallest label set and performs best with neural models. Based on these results, we selected Path as our labeling scheme. As shown in the projectivized representations, upward arrows mark the lifted arcs, while downward arrows mark the original ancestors that the lifted arcs pass through during lifting.
 ```
 # sent_id = tlg0008.tlg001.perseus-grc1.13.tb.xml@1207
 # text = καὶ γὰρ ὁ νομοθέτης Σόλων ἔφη·
@@ -52,6 +53,7 @@ The main innovation is the observation that a sentence can be converted into a t
 ```
 
 ## [Penn Tree Bank] Pseudo-projective, Constituentized Trees in .mrg file
+Tree representations were only available for constituent structures. We extend this representation to dependency structures by wrapping dependency relations around the original constituents, allowing dependency relations to be represented in a tree format.
 ```
 (TOP (root (advmod↑ (ADV καὶ)) (advmod (ADV γὰρ)) (nsubj↓ (det (DET ὁ)) (nmod (NOUN νομοθέτης)) (NOUN Σόλων)) (VERB ἔφη) (punct (PUNCT ·))))
 ```
@@ -64,6 +66,7 @@ We follow the linearization method proposed by Google. The sentence is delexical
 
 
 ## [Custom] Structured Tokens in .json file
+The structured token format was developed based on the linearized representation. We assign left and right features to each actual token, represented by its POS tag. The left feature consists of the left brackets before the token, while the right feature consists of the right brackets after the token, stopping when the first left bracket is encountered. We also introduce an overlap variable to capture structural overlap between adjacent tokens. For example, if overlap = 3, three brackets in the left feature of the following token overlap with the right feature of the previous token.
 ```
  [
         {
@@ -133,41 +136,27 @@ We follow the linearization method proposed by Google. The sentence is delexical
 
 
 
-
-
-
 ## Quick Start
 1. Data preprocessing for upstream model training (projectivization and conllu-to-tree conversion)
 ```
-# main.py
-common_preprocessing_pipeline("English", split="train", pos="UPOS", head=None, path=None, labels_aligned=False)
+scripts/main.py
+common_preprocessing_pipeline(lang="Ancient_Greek", split="train", pos="UPOS", head=None, path=None, labels_aligned=False)
 ```
 2. Data preprocessing for downstream model training (linearization)
 ```
-# main.py
-neural_preprocessing_pipeline("English", ["train", "dev", "test"], pos="UPOS", epochs=100, is_target=True)
+scripts/main.py
+downstream_preprocessing_pipeline(lang="Ancient_Greek", split="train", pos="XPOS", epochs=20, overlap=0, is_target=False)
 ```
 3. Data postprocessing (delinearization and replacement with source data [enabled with the option `is_neural=True`], tree-to-conllu conversion, deprojectivization)
 ```
-# main.py
-postprocessing_pipeline("English", pos="upos", epochs=100, is_neural=True)
+scripts/main.py
+postprocessing_pipeline(lang="Ancient_Greek", pos="UPOS", epochs=100, subfolder="label_experiments", head=head, path=path)
 ```
 4. Upstream model training
 ```
-# src/models/stanza/train_stanza.sh
+src/models/stanza/train_stanza.sh
 ```
 5. Upstream model inference
 ```
-# src/models/stanza/run_stanza.py
+src/models/stanza/run_stanza.py
 ```
-5. Downstream mdoel training
-```
-# models/train_t5.py
-mode = "train"
-```
-6. Downstream model inference
-```
-# models/train_t5.py
-mode = "predict"
-```
-**P.S. I will add argparse later. Sorry for the inconvinence.**
