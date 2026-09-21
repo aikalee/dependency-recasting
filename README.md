@@ -1,3 +1,16 @@
+## Overview
+This project aims to convert non-projective sentences into pseudo-projective tree representations, making them compatible with parsing models that have linear inference complexity. Traditionally, parsing non-projective sentences requires algorithms with higher computational complexity, such as the $(O(n^3))$ MST parser. With the proposed data representation, however, these sentences can be parsed in $(O(n))$ time.
+
+## Workflow
+### Flowcharts of the workflow
+<img width="300" alt="upsteam-preprocessing" src="https://github.com/user-attachments/assets/d000b637-b775-4ab3-b16d-f3c5951c6447" /> \
+Figure 1. Upstream preprocessing \
+<img width="300" alt="upstream-postprocessing" src="https://github.com/user-attachments/assets/f0571747-5fcc-436a-ad7e-67ccacfc83af" /> \
+Figure 2. Upstream postprocessing, Downstream pre- and postprocessing \
+<img width="300" alt="custom-model-processing" src="https://github.com/user-attachments/assets/dc6ba552-dbd7-4cd8-b8ee-c6cdc144dcbd" /> \
+Figure 3. Alternative Custom model pre- and postprocessing
+
+### Description of the workflow
 1. Start from the original UD trees.
 2. Apply pseudo-projective lifting to obtain a projectivized UD representation.
 3. Convert the lifted UD trees into the dependency-tree representation $\mathcal{D}$.
@@ -9,13 +22,119 @@ $\mathcal{D} \mapsto \mathcal{L}$ and $\mathcal{D}^\prime \mapsto \mathcal{L}^\p
 
 For evaluation, the outputs are deprojectivized back to the original non-projective UD structures, and scores are reported in the original UD space.
 
-## Flowchart
-<img width="300" alt="upsteam-preprocessing" src="https://github.com/user-attachments/assets/d000b637-b775-4ab3-b16d-f3c5951c6447" /> \
-Figure 1. \
-<img width="300" alt="upstream-postprocessing" src="https://github.com/user-attachments/assets/f0571747-5fcc-436a-ad7e-67ccacfc83af" /> \
-Figure 2. \
-<img width="300" alt="custom-model-processing" src="https://github.com/user-attachments/assets/dc6ba552-dbd7-4cd8-b8ee-c6cdc144dcbd" /> \
-Figure 3. 
+## Data Formats
+The main innovation is the observation that a sentence can be converted into a tree representation only if it is projective or pseudo-projective. Therefore, projectivization must take place before the conversion to trees (constituentization).
+### [CoNLL-U] Raw CoNLL-U
+```
+# sent_id = tlg0008.tlg001.perseus-grc1.13.tb.xml@1207
+# text = καὶ γὰρ ὁ νομοθέτης Σόλων ἔφη·
+1	καὶ	καί	ADV	d--------	_	5	advmod	_	_
+2	γὰρ	γάρ	ADV	d--------	_	6	advmod	_	_
+3	ὁ	ὁ	DET	l-s---mn-	Case=Nom|Gender=Masc|Number=Sing	5	det	_	_
+4	νομοθέτης	νομοθέτης	NOUN	n-s---mn-	Case=Nom|Gender=Masc|Number=Sing	5	nmod	_	_
+5	Σόλων	Σόλων	NOUN	n-s---mn-	Case=Nom|Gender=Masc|Number=Sing	6	nsubj	_	_
+6	ἔφη	φημί	VERB	v3siia---	Aspect=Imp|Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	SpaceAfter=No
+7	·	·	PUNCT	u--------	_	6	punct	_	_
+```
+
+
+### [CoNLL-U] Pseudo-projective CoNLL-U
+```
+# sent_id = tlg0008.tlg001.perseus-grc1.13.tb.xml@1207
+# text = καὶ γὰρ ὁ νομοθέτης Σόλων ἔφη·
+1	καὶ	καί	ADV	d--------	_	6	advmod↑	_	_
+2	γὰρ	γάρ	ADV	d--------	_	6	advmod	_	_
+3	ὁ	ὁ	DET	l-s---mn-	Case=Nom|Gender=Masc|Number=Sing	5	det	_	_
+4	νομοθέτης	νομοθέτης	NOUN	n-s---mn-	Case=Nom|Gender=Masc|Number=Sing	5	nmod	_	_
+5	Σόλων	Σόλων	NOUN	n-s---mn-	Case=Nom|Gender=Masc|Number=Sing	6	nsubj↓	_	_
+6	ἔφη	φημί	VERB	v3siia---	Aspect=Imp|Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	SpaceAfter=No
+7	·	·	PUNCT	u--------	_	6	punct	_	_
+```
+
+## [Penn Tree Bank] Pseudo-projective, Constituentized Trees in .mrg file
+```
+(TOP (root (advmod↑ (ADV καὶ)) (advmod (ADV γὰρ)) (nsubj↓ (det (DET ὁ)) (nmod (NOUN νομοθέτης)) (NOUN Σόλων)) (VERB ἔφη) (punct (PUNCT ·))))
+```
+
+## [Google] Pseudo-projective, Linearized Trees .txt file
+We follow the linearization method proposed by Google. The sentence is delexicalized, with POS tags representing the actual tokens in the sentence. Dependency relations are represented using balanced opening and closing brackets, such as `(nsubj` and `)nsubj`. Each POS tag and dependency bracket is treated as an individual token in the linearized representation.
+```
+(TOP (root (advmod-up ADV )advmod-up (advmod ADV )advmod (nsubj-down (det DET )det (nmod NOUN )nmod NOUN )nsubj-down VERB (punct PUNCT )punct )root )TOP
+```
+
+
+## [Custom] Structured Tokens in .json file
+```
+ [
+        {
+          "token": "ADV",
+          "left": [
+            "(TOP",
+            "(root",
+            "(advmod-up"
+          ],
+          "right": [
+            ")advmod-up"
+          ]
+        },
+        {
+          "token": "ADV",
+          "left": [
+            "(advmod"
+          ],
+          "right": [
+            ")advmod"
+          ]
+        },
+        {
+          "token": "DET",
+          "left": [
+            "(nsubj-down",
+            "(det"
+          ],
+          "right": [
+            ")det"
+          ]
+        },
+        {
+          "token": "NOUN",
+          "left": [
+            "(nmod"
+          ],
+          "right": [
+            ")nmod"
+          ]
+        },
+        {
+          "token": "NOUN",
+          "left": [],
+          "right": [
+            ")nsubj-down"
+          ]
+        },
+        {
+          "token": "VERB",
+          "left": [],
+          "right": []
+        },
+        {
+          "token": "PUNCT",
+          "left": [
+            "(punct"
+          ],
+          "right": [
+            ")punct",
+            ")root",
+            ")TOP"
+          ]
+        }
+      ],
+```
+
+
+
+
+
 
 ## Quick Start
 1. Data preprocessing for upstream model training (projectivization and conllu-to-tree conversion)
