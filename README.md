@@ -1,8 +1,11 @@
 ## Overview
 This project aims to convert non-projective sentences into pseudo-projective tree representations, making them compatible with parsing models that have linear inference complexity. Traditionally, parsing non-projective sentences requires algorithms with higher computational complexity, such as the $(O(n^3))$ MST parser. With the proposed data representation, however, these sentences can be parsed in $(O(n))$ time. The main innovation is the observation that a sentence can be converted into a tree representation only if it is projective or pseudo-projective. Therefore, projectivization must take place before the conversion to trees (constituentization).
 
-## Workflow
-### Flowcharts of the workflow
+## Key feature
+We use the Stanza Constituency Parser for upstream predictions. One challenge of using a constituency parser for dependency parsing is that the resulting subtrees may be headless or contain multiple heads. To enforce structural validity, we designed a BFS-plus-recursion algorithm to select a reasonable head for headless or multi-head subtrees (tokens).
+
+## Architecture
+### Flowcharts of the architecture
 <img width="300" alt="upsteam-preprocessing" src="https://github.com/user-attachments/assets/d000b637-b775-4ab3-b16d-f3c5951c6447" /> \
 Figure 1. Upstream preprocessing \
 <img width="300" alt="upstream-postprocessing" src="https://github.com/user-attachments/assets/f0571747-5fcc-436a-ad7e-67ccacfc83af" /> \
@@ -23,7 +26,6 @@ $\mathcal{D} \mapsto \mathcal{L}$ and $\mathcal{D}^\prime \mapsto \mathcal{L}^\p
 For evaluation, the outputs are deprojectivized back to the original non-projective UD structures, and scores are reported in the original UD space.
 
 ## Data Formats
-
 ### [CoNLL-U] Raw CoNLL-U
 ```
 # sent_id = tlg0008.tlg001.perseus-grc1.13.tb.xml@1207
